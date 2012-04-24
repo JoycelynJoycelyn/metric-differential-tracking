@@ -1,0 +1,51 @@
+function A = train( frame , obj_box)
+
+    %numero di campioni true= (2 x true_sample + 1)^2
+    obj_box=ceil(obj_box);
+    h=rg_hist(imcrop(frame,obj_box));
+    positive_sample=4;
+    step_positive=4;
+    soglia_pos=0.5;
+    soglia_neg=0.4;
+
+    pos_feature = [];
+    neg_feature = [];
+    
+    N=getNeighbor(obj_box,positive_sample,step_positive);
+
+    for i=1:size(N,1)
+        rect = N(i,:);
+        subImg= im2double(imcrop(frame,rect));
+%         i_c = round(rect(3)/2 + rect(1));
+%         j_c = round(rect(4)/2 + rect(2));
+        subIm = im2double(subIm);
+        subIm = subIm / 255.0;
+        inters=intersectBB(obj_box,rect);
+        feature= get_histogram_feature(subImg, rect, 225);%, i_c, j_c);
+        if(inters>soglia_pos)
+            pos_feature = [pos_feature; feature];
+        end
+        if(inters<soglia_neg)
+            neg_feature = [neg_feature; feature];
+        end
+    end
+        
+%     step_orizzontale=ceil(size(frame,2)/((2*positive_sample)+1));
+%     step_verticale =ceil(size(frame,1)/((2*positive_sample)+1));
+%     
+%     for i=0:((2*positive_sample))
+%         for j=0:((2*positive_sample))
+%             box=[i*step_orizzontale, j*step_verticale, step_orizzontale, step_verticale ];
+%             if(~( pointInBox([box(1),box(2)],obj_box) || pointInBox([box(1)+box(3),box(2)],obj_box) || pointInBox([box(1),box(2)+box(4)],obj_box) || pointInBox([box(1)+box(3),box(2)+box(4)],obj_box) ))
+%                 neg_feature = [neg_feature; rg_hist(imcrop(frame,box))];
+%             end
+%         end
+%     end
+    
+    sample= [pos_feature; neg_feature];
+    label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),1); zeros(size(neg_feature,1),1) ones(size(neg_feature,1),1)];
+    A = eye(225);
+    %[Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
+    %A = reshape(Anew,225,225);
+    
+end
