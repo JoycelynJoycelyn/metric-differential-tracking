@@ -1,4 +1,4 @@
-function T = filter(T, frame)
+function T = mean_track(T, frame)
 % FILTER_BLOBS - simple representer of targets as largest foreground bounding box.
 %
 % NOTE: This function is intended to be run as a REPRESENTER in the

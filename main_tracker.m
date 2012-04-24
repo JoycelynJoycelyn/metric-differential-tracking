@@ -20,7 +20,7 @@ function T = main_tracker(fname)%, gamma, tau, radius)
 
 % Recognizer and representer is a simple blob finder.
 % Recognizer.recognize = @find_blob;
-Representer.represent = @filter;
+Representer.represent = @mean_track;
 
 % The tracker module.
 % Tracker.H          = eye(4);        % System model
