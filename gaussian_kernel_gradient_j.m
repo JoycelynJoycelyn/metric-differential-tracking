@@ -11,4 +11,6 @@ n = (1/sqrt(2*pi*s^2)) * (j / s^2 );
 
 jk_j = n * d;
 
+%prova commit ?
+
 end
