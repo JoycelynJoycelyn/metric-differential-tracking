@@ -1,4 +1,4 @@
-function T = main_tracker(fname, gamma, tau, radius)
+function T = main_tracker(fname)%, gamma, tau, radius)
 
 % KALMAN_TRACKER - A zero-order Kalman filter tracker.
 %
@@ -20,7 +20,7 @@ function T = main_tracker(fname, gamma, tau, radius)
 
 % Recognizer and representer is a simple blob finder.
 % Recognizer.recognize = @find_blob;
-Representer.represent = @filter_blobs;
+Representer.represent = @filter;
 
 % The tracker module.
 % Tracker.H          = eye(4);        % System model
