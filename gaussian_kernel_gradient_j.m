@@ -1,7 +1,7 @@
 function jk_j = gaussian_kernel_gradient_j(i, j, s)
 
 %va fatto in entrambe le direzioni
-%i e j sono gi‡ centrati e spostati della giusta quantit‡ delta
+%i e j sono gi√† centrati e spostati della giusta quantit√† delta
 
 %ro = 20;
 
@@ -11,6 +11,5 @@ n = (1/sqrt(2*pi*s^2)) * (j / s^2 );
 
 jk_j = n * d;
 
-%prova commit ?
 
 end
