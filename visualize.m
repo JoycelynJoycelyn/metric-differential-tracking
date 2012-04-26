@@ -38,7 +38,7 @@ drawnow;
     
     T.target.q = get_histogram_feature(T.target.subIm, rect, 225);%, i_c, j_c);
     T.target.BB_q = rect;
-    T.target.BB_p = T.target.BB_q;
+    T.target.BB_p = T.target.BB_q + eps;
     
     %leva la pausa dopo il crop
     setappdata(gcf, 'paused', false);

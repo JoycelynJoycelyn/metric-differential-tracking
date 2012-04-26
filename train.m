@@ -3,8 +3,8 @@ function A = train( frame , obj_box)
     %numero di campioni true= (2 x true_sample + 1)^2
     obj_box=ceil(obj_box);
     h=rg_hist(imcrop(frame,obj_box));
-    positive_sample=50; 
-    negative_sample=75;
+    positive_sample=30; 
+    negative_sample=30;
     soglia_pos=0.8;
     soglia_neg=0.3;
 
