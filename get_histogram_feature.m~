@@ -1,130 +1,13 @@
-function q = get_histogram_feature(subIm, BB, frame, m, i_c, j_c, i_dc, j_dc)
+function q = get_histogram_feature(subIm, BB, m)
 
-%i_c e j_c sono le coordinate del centro di q (ancora non centrato in zero)
-%i_dc e j_dc sono le distanze sugli assi dal centro
+%i_c e j_c sono le coordinate del centro della bounding box
+%i_dc e j_dc sono le distanze sugli assi dal centro (per q sono zero)
 
-C = 0;
-q = zeros(1,1)'; 
+q = zeros(m,1)'; 
  
-%crea matrice rg della subIm da tracciare
-RGB = sum(subIm, 3)+eps;
-r = subIm(:,:,1) ./ RGB;
-g = subIm(:,:,2) ./ RGB;
-%tra 0 e 14
-r = round(r*14);
-g = round(g*14);
-
-
-% T.R = imhist(subIm(:,:,1),75);
-% %T.R = T.R ./ (BB(3)*BB(4));
-% %H.R=H.R./norm(H.R,1);
-% T.G = imhist(subIm(:,:,2),75);
-% %T.G = T.G ./ (BB(3)*BB(4));
-% %H.G=H.G./norm(H.G,1);
-% 
-% T.B = imhist(subIm(:,:,3),75);
-% %T.B = T.B ./ (BB(3)*BB(4));
-% %H.B=H.B./norm(H.B,1);
-% 
-% H = [T.R; T.G; T.B];
-% H_n = H ./ (norm(H,1));
-
-
-
-K = zeros(length(subIm), 1);
-U = zeros(length(subIm), m);
-
-%costruzioni matrici U e K
-t=1;
-C = 0;
-i_s=1;
-j_s=1;
-    for i = floor(BB(1)) : floor(BB(1))
-        j_s = 1 ;
-       for j = floor(BB(2)) : floor(BB(2)+BB(4))
-           
-           i_n_H = (i - (i_c + i_dc)) ./ length(subIm);
-           j_n_H = (j - (j_c + j_dc)) ./ length(subIm);
-           K(t,1) = gaussian_kernel(i_n_H, j_n_H);
-           C = C + gaussian_kernel(i_n_H, j_n_H) ;
-           
-%            %componenti normalized-rg
-%            r = frame(i , j , 1) / (frame(i , j , 1) + frame(i , j , 2) + frame(i , j , 3))
-%            g = frame(i , j , 2) / (frame(i , j , 1) + frame(i , j , 2) + frame(i , j , 3))
-%            %messi tra 1 e 15
-%            r_n = round(r * 15)+1
-%            g_n = round(g * 15)+1
-%            %creazione riga matrice U relativa a un singolo pixel
-%            b = r_n * g_n 
-           
-           b = r(i_s, j_s) + g(i_s, j_s) * 15 + 1; 
-           U(t, b) =  1  ;
-           U(t,:);
-           %sum(U (t, :))
-           
-           j_s = j_s + 1;
-           %concatenazione R G B
-           %U(t, :) = [imhist(frame(i , j , 1),75); imhist(frame(i , j , 2),75); imhist(frame(i , j , 3),75)] ./ 3;
-           
-           t = t + 1;
-           
-       end
-       i_s = i_s + 1;
-    end
-
-%normalizzazione K
-%K = K * (1/C) ;
-U;
-
-
-K;
-q = (1/C) * U' * K;
+U = get_U(subIm, m);
+K = get_K(subIm);%, BB, i_c, j_c); %già normalizzato, pixel centrati e la relativa distanza dal centro
+q = U' * K;
 
 
 end
-
-
-
-
-
-%H = H ./ (BB(3)*BB(4));
-%size(H)
-
-%i_c = round(BB(3)/2 + BB(1));
-%j_c = round(BB(4)/2 + BB(2));
-
-% for u = 1 : m
-%       qu = 0;
-%       % qu_b = 0;
-%       C = 0;
-%       
-% %per ognuno dei 75 bins per ogni componente
-% %per ogni pixel della BB
-%       for i = round(BB(1)) : round(BB(1)+BB(3))        
-%           for j = round(BB(2)) : round(BB(2)+BB(4))
-%               % bin del pixel
-%               % b = H_n(u);
-%               U = [imhist(frame(i , j , 1),75); imhist(frame(i , j , 2),75); imhist(frame(i , j , 3),75)] ./3 ;
-%               %U = U ./ norm(U,1);
-%               b = U(u);
-%               
-%               % normalizzati sul numero di pixel totali della BB
-%               i_n_H = (i - i_c) ./  (norm(H,1)/3);
-%               
-%               j_n_H = (j - j_c) ./  (norm(H,1)/3);
-%               
-%               qu = qu + (b * gaussian_kernel(i_n_H, j_n_H)) ;
-%               
-%               C = C + gaussian_kernel(i_n_H, j_n_H);
-%           end
-%       end
-%       
-%       if  u == 1
-%           q = qu/C;
-%           % q_b = qu_b
-%       else
-%           q = [q; qu/C];
-%           % q_b = [q_b; qu_b];
-%       end
-%       
-% end
