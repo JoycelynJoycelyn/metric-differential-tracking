@@ -1,10 +1,10 @@
-function A = train( frame , obj_box)
+function A = train( frame , obj_box, positive_sample, negative_sample)
 
     %numero di campioni true= (2 x true_sample + 1)^2
     obj_box=ceil(obj_box);
     h=rg_hist(imcrop(frame,obj_box));
-    positive_sample=30; 
-    negative_sample=30;
+%     positive_sample=10; 
+%     negative_sample=10;
     soglia_pos=0.8;
     soglia_neg=0.3;
 
@@ -55,10 +55,10 @@ function A = train( frame , obj_box)
     feature_negative = size(neg_feature,1)
     sample= [pos_feature; neg_feature];
     label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),1); zeros(size(neg_feature,1),1) ones(size(neg_feature,1),1)];
-    %A = [eye(75) zeros(75,150)];
-    A = eye(225);
+    A = [eye(100) zeros(100,125)];
+    %A = eye(225);
     [Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
-    A = reshape(Anew,225,225);
+    A = reshape(Anew,100,225);
     
 end
 

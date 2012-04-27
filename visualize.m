@@ -30,15 +30,15 @@ drawnow;
     rect = getrect;
     subIm  = imcrop(frame, rect);
     T.target.subIm = im2double(subIm);
-    T.target.subIm = T.target.subIm / 255.0;
+    T.target.subIm = T.target.subIm;
     %chiamo la funzione train per il calcolo della matrice A
-    T.target.A = train(frame,rect);
+    T.target.A = train(frame,rect, 15, 15);
     %T.target.A = [eye(50) zeros(50,175)];
     %T.target.A = eye(225) ;
     
     T.target.q = get_histogram_feature(T.target.subIm, rect, 225);%, i_c, j_c);
     T.target.BB_q = rect;
-    T.target.BB_p = T.target.BB_q + eps;
+    
     
     %leva la pausa dopo il crop
     setappdata(gcf, 'paused', false);

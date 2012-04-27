@@ -12,10 +12,17 @@ function T = track(T, frame)
       %optimal displacement to calculate (delta_c)
       T.target.dc = get_dc(T);
       T.target.dc
+      if T.target.dc(1) == 0 && T.target.dc(2) == 0 
+          T.target.BB_p = T.target.BB_q + eps;
+      end
       %update bounding box
       T.target.BB_p(1) = T.target.BB_p(1) - T.target.dc(1);
       T.target.BB_p(2) = T.target.BB_p(2) - T.target.dc(2);
-  
+      
+      % training examples acquisition
+      
+      % evaluation of g(A), and any metric adjustment 
+      
   end
 
 %end
