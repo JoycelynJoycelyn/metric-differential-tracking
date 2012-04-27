@@ -1,4 +1,5 @@
 # Ignoring list
+	*.doc
 	*.flv
 	*.wmv
 	*.pdf
