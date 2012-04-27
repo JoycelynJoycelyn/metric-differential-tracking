@@ -1,27 +1,8 @@
 # Ignoring list
-        black_Sabbath_Paranoid_Frontal.jpg
-	Gradiente.pdf
-	KernelTracking.pdf
-	Object Tracking in MATLAB.flv
-	car-1.avi
-	car-2.avi
-	car-3.avi
-	cover1.jpg
-	elio_e_le_storie_tese_cicciput.jpg
-	gD/
-	kernelDemo/
-	kernel_cvpr2004.pdf
-	lemming.wmv
-	nca.log
-	nca.pdf
-	nca_demo/
-	peppers.png
-	pf/
-	prova_1.jpg
-	run_tracker.m~
-	test-2.avi
-	test-3.avi
-	test-5.avi
-	test.avi
-	the_best_of_me.jpg
+	*.flv
+	*.wmv
+	*.pdf
+	*.png
+	*.avi
+	*.jpg
 	*.m~
