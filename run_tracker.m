@@ -12,7 +12,7 @@ while nextFrame(vr)
   frame = getFrame(vr);
   
   if T.frame_number == 2
-      T.target.BB_q = [ 53.2880  253.8333   25   25 ];
+      T.target.BB_q = [ 53.2880  253.8333   25.1   25.1 ];
       %T.target.BB_q
       T.target.BB_p = T.target.BB_q;
       T.target.subIm = im2double(imcrop(frame, T.target.BB_q));
