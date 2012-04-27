@@ -6,7 +6,7 @@ function A = train( frame , obj_box, positive_sample, negative_sample)
 %     positive_sample=10; 
 %     negative_sample=10;
     soglia_pos=0.8;
-    soglia_neg=0.3;
+    soglia_neg=0.12;
 
     pos_feature = [];
     neg_feature = [];
@@ -21,6 +21,10 @@ function A = train( frame , obj_box, positive_sample, negative_sample)
         feature= get_histogram_feature(subImg, rect, 225)';
         pos_feature = [pos_feature; feature];
         i=i+1;
+        %disegnamo il campione positivo sul frame
+        rectangle('Position', rect, 'EdgeColor', 'r');
+        drawnow;
+
     end
     
     offset=1;
@@ -34,6 +38,9 @@ function A = train( frame , obj_box, positive_sample, negative_sample)
             feature= get_histogram_feature(subImg, rect, 225)';
             if(inters<soglia_neg && size(neg_feature,1) < negative_sample)
                 neg_feature = [neg_feature; feature];
+                %disegnamo il campione negativo sul frame
+                rectangle('Position', rect, 'EdgeColor', 'y');
+                drawnow;
             end
         end
         offset = offset+1;
@@ -55,10 +62,10 @@ function A = train( frame , obj_box, positive_sample, negative_sample)
     feature_negative = size(neg_feature,1)
     sample= [pos_feature; neg_feature];
     label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),1); zeros(size(neg_feature,1),1) ones(size(neg_feature,1),1)];
-    A = [eye(100) zeros(100,125)];
-    %A = eye(225);
+    %A = [eye(100) zeros(100,125)];
+    A = eye(225);
     [Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
-    A = reshape(Anew,100,225);
+    A = reshape(Anew,225,225);
     
 end
 

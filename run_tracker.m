@@ -12,13 +12,18 @@ while nextFrame(vr)
   frame = getFrame(vr);
   
   if T.frame_number == 2
-      T.target.BB_q = [ 53.2880  253.8333   25.1   25.1 ];
+      T.target.BB_q = [ 53.2880  253.8333   25   25 ];
       %T.target.BB_q
       T.target.BB_p = T.target.BB_q;
       T.target.subIm = im2double(imcrop(frame, T.target.BB_q));
+      rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
+      drawnow;
       T.target.A = train(frame,T.target.BB_q, 30, 30);
       T.target.q = get_histogram_feature(T.target.subIm, T.target.BB_q, 225);
-    
+      
+      T.target.pos_feature_tot = [];
+      T.target.neg_feature_tot = [];
+          
   end
   
   if isfield(T, 'representer')

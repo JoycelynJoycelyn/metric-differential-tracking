@@ -14,7 +14,7 @@ image(frame);
 % Draw the current measurements (all BoundingBoxes) in red.
  if isfield(T, 'target')
      %draw q
-     %rectangle('Position', T.target.BB_q, 'EdgeColor', 'r');
+     %rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
      %draw p
      rectangle('Position', T.target.BB_p, 'EdgeColor', 'g');
      
