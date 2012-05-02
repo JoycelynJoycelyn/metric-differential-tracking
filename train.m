@@ -6,7 +6,7 @@ function A = train( frame , obj_box, positive_sample, negative_sample)
 %     positive_sample=10; 
 %     negative_sample=10;
     soglia_pos=0.8;
-    soglia_neg=0.12;
+    soglia_neg=0.05;
 
     pos_feature = [];
     neg_feature = [];

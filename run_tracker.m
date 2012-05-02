@@ -18,7 +18,7 @@ while nextFrame(vr)
       T.target.subIm = im2double(imcrop(frame, T.target.BB_q));
       rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
       drawnow;
-      T.target.A = train(frame,T.target.BB_q, 30, 30);
+      T.target.A = train(frame,T.target.BB_q, 30, 40);
       T.target.q = get_histogram_feature(T.target.subIm, T.target.BB_q, 225);
       
       T.target.pos_feature_tot = [];
