@@ -34,12 +34,15 @@ Representer.represent = @filter;
 Visualizer.visualize = @visualize;
 Visualizer.paused    = false;
 
+OutputCreator.write = @writeVideo;
+
 % Set up the global tracking system.
 %T.segmenter   = Segmenter;
 %T.recognizer  = Recognizer;
 T.representer = Representer;
 %T.tracker     = Tracker;
 T.visualizer  = Visualizer;
+T.outputCreator = OutputCreator;
 
 % And run the tracker on the video.
 run_tracker(fname, T);

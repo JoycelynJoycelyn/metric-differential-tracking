@@ -47,8 +47,12 @@ while nextFrame(vr)
    if isfield(T, 'visualizer')
      T = T.visualizer.visualize(T, frame);
    end
-  
+   
+   if isfield(T,'outputCreator')
+     T = T.outputCreator.write(T);
+   end
   T.time = T.time + 1/T.fps
 
 end
+close(T.outputCreator.video);
 return
