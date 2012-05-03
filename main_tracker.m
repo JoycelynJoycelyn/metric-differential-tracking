@@ -6,14 +6,14 @@ Representer.represent = @track;
 Visualizer.visualize = @visualize;
 Visualizer.paused    = false;
 
-<<<<<<< HEAD
+%<<<<<<< HEAD
 OutputCreator.write = @writeVideo;
 
 % Set up the global tracking system.
 %T.segmenter   = Segmenter;
 %T.recognizer  = Recognizer;
-=======
->>>>>>> 8d315118d7b502a7f02fba4aefd3e761e68d3500
+%=======
+%>>>>>>> 8d315118d7b502a7f02fba4aefd3e761e68d3500
 T.representer = Representer;
 T.visualizer  = Visualizer;
 T.outputCreator = OutputCreator;
