@@ -1,14 +1,14 @@
-function A = train( frame , obj_box)
+function A = train( frame , obj_box, positive_sample, negative_sample)
 
 
 
     %numero di campioni true= (2 x true_sample + 1)^2
     obj_box=ceil(obj_box);
     h=rg_hist(imcrop(frame,obj_box));
-    positive_sample=50; 
-    negative_sample=50;
+%     positive_sample=10; 
+%     negative_sample=10;
     soglia_pos=0.8;
-    soglia_neg=0.3;
+    soglia_neg=0.05;
 
 
     pos_feature = [];
@@ -21,11 +21,13 @@ function A = train( frame , obj_box)
     while(size(pos_feature,1) < positive_sample)
         rect = N(i,:);
         subImg= im2double(imcrop(frame,rect));
-%         i_c = round(rect(3)/2 + rect(1));
-%         j_c = round(rect(4)/2 + rect(2));
-        feature= get_histogram_feature(subImg, rect, 225)';%, i_c, j_c)';
+        feature= get_histogram_feature(subImg, rect, 225)';
         pos_feature = [pos_feature; feature];
         i=i+1;
+        %disegnamo il campione positivo sul frame
+        rectangle('Position', rect, 'EdgeColor', 'r');
+        drawnow;
+
     end
     
     offset=1;
@@ -35,12 +37,13 @@ function A = train( frame , obj_box)
         for i=1:size(N,1)
             rect = N(i,:);
             subImg= im2double(imcrop(frame,rect));
-    %         i_c = round(rect(3)/2 + rect(1)); 
-    %         j_c = round(rect(4)/2 + rect(2));
             inters=intersectBB(obj_box,rect);
-            feature= get_histogram_feature(subImg, rect, 225)';%, i_c, j_c)';
+            feature= get_histogram_feature(subImg, rect, 225)';
             if(inters<soglia_neg && size(neg_feature,1) < negative_sample)
                 neg_feature = [neg_feature; feature];
+                %disegnamo il campione negativo sul frame
+                rectangle('Position', rect, 'EdgeColor', 'y');
+                drawnow;
             end
         end
         offset = offset+1;
@@ -62,6 +65,7 @@ function A = train( frame , obj_box)
     feature_negative = size(neg_feature,1)
     sample= [pos_feature; neg_feature];
     label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),1); zeros(size(neg_feature,1),1) ones(size(neg_feature,1),1)];
+    %A = [eye(100) zeros(100,125)];
     A = eye(225);
     [Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
     A = reshape(Anew,225,225);
