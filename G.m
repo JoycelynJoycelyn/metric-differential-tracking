@@ -17,7 +17,7 @@ function V = G( A, pos_sample, neg_sample )
         end
     end
     
-    V =  V + log(sum_p);
+    V =  (V + log(sum_p));
 
 end
 

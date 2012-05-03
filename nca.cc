@@ -121,6 +121,7 @@ mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
       F[0] = F[0] + log(pi[i]);
     }
 
+
     //now compute the gradient
     //double* M = new double[ID*ID];
     memset(M,0,ID*ID*sizeof(double));

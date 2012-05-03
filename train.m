@@ -67,8 +67,14 @@ function A = train( frame , obj_box, positive_sample, negative_sample)
     label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),1); zeros(size(neg_feature,1),1) ones(size(neg_feature,1),1)];
     %A = [eye(100) zeros(100,125)];
     A = eye(225);
+    G(A, pos_feature', neg_feature')
+    
     [Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
     A = reshape(Anew,225,225);
+    
+    G(A, pos_feature', neg_feature')
+    
+    pause();
     
 end
 
