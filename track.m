@@ -44,7 +44,10 @@ function T = track(T, frame)
 %           end
 %       end
         obj_box = T.target.BB_p;
-       while(size(pos_feature,1) < 5 || size(neg_feature,1) < 5)
+        rectangle('Position', obj_box, 'EdgeColor', 'b');
+        drawnow;
+        campioni= 5;
+       while(size(pos_feature,1) < campioni || size(neg_feature,1) < campioni)
         offset = 10* randn(1,2);
         offset = [offset 0 0];
         rect = obj_box+offset;
@@ -52,7 +55,7 @@ function T = track(T, frame)
             
             inters=intersectBB(obj_box,rect);
 
-            if(inters<soglia_neg && size(neg_feature,1) < 5)
+            if(inters<soglia_neg && size(neg_feature,1) < campioni)
                      subImg= im2double(imcrop(frame,rect));
                      feature= get_histogram_feature(subImg, rect, 225)';
                      neg_offset = [neg_offset; offset];
@@ -62,7 +65,7 @@ function T = track(T, frame)
                      drawnow;
             end
 
-            if(inters>soglia_pos && size(pos_feature,1) < 5)
+            if(inters>soglia_pos && size(pos_feature,1) < campioni)
                 subImg= im2double(imcrop(frame,rect));
                 feature= get_histogram_feature(subImg, rect, 225)';
                 pos_offset =[pos_offset; offset];
@@ -77,6 +80,10 @@ function T = track(T, frame)
       
       T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
       T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
+      if(size(T.target.pos_feature_tot,1)>3*campioni)
+        T.target.pos_feature_tot = T.target.pos_feature_tot(campioni+1:size(T.target.pos_feature_tot,1),:);
+        T.target.neg_feature_tot = T.target.neg_feature_tot(campioni+1:size(T.target.neg_feature_tot,1),:);  
+      end
       
       g=G(T.target.A, T.target.pos_feature_tot', T.target.neg_feature_tot')         
       if(g<T.target.G*0.8)
