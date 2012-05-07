@@ -19,7 +19,7 @@ while nextFrame(vr)
       rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
       drawnow;
       pause(10);
-      T.target.A = train(frame,T.target.BB_q, 50, 25);
+      T = train(frame,T.target.BB_q, 15, 15,T);
       T.target.q = get_histogram_feature(T.target.subIm, T.target.BB_q, 225);
       
       T.target.pos_feature_tot = [];
