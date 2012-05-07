@@ -24,9 +24,9 @@ function T = track(T, frame)
       
       %training examples acquisition for g(A) evalutation
       neg_feature = [];
-      neg_offset = [];
+     % neg_offset = [];
       pos_feature = [];
-      pos_offset = [];
+     % pos_offset = [];
       soglia_pos=0.8;
       soglia_neg=0.05;
 %       for(i=1:size(T.target.pos_offset,1))
@@ -46,34 +46,37 @@ function T = track(T, frame)
         obj_box = T.target.BB_p;
         rectangle('Position', obj_box, 'EdgeColor', 'b');
         drawnow;
-        campioni= 5;
+        campioni= 8;
+        rng('default');
        while(size(pos_feature,1) < campioni || size(neg_feature,1) < campioni)
-        offset = 10* randn(1,2);
+           
+        offset = (min(T.target.BB_p(3), T.target.BB_p(4))/2) * randn(1,2);
         offset = [offset 0 0];
         rect = obj_box+offset;
         if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
             
             inters=intersectBB(obj_box,rect);
-
-            if(inters<soglia_neg && size(neg_feature,1) < campioni)
-                     subImg= im2double(imcrop(frame,rect));
-                     feature= get_histogram_feature(subImg, rect, 225)';
-                     neg_offset = [neg_offset; offset];
-                     neg_feature = [neg_feature; feature];
-                     %disegnamo il campione negativo sul frame
-                     rectangle('Position', rect, 'EdgeColor', 'y');
-                     drawnow;
-            end
-
+            
             if(inters>soglia_pos && size(pos_feature,1) < campioni)
                 subImg= im2double(imcrop(frame,rect));
                 feature= get_histogram_feature(subImg, rect, 225)';
-                pos_offset =[pos_offset; offset];
+            %    pos_offset =[pos_offset; offset];
                 pos_feature = [pos_feature; feature]; 
                 %disegnamo il campione positivo sul frame
                 rectangle('Position', rect, 'EdgeColor', 'r');
                 drawnow;
             end
+
+            if(inters<soglia_neg && size(neg_feature,1) < campioni)
+             subImg= im2double(imcrop(frame,rect));
+             feature= get_histogram_feature(subImg, rect, 225)';
+    %         neg_offset = [neg_offset; offset];
+             neg_feature = [neg_feature; feature];
+             %disegnamo il campione negativo sul frame
+             rectangle('Position', rect, 'EdgeColor', 'y');
+             drawnow;
+            end
+            
         end
 
       end
@@ -91,13 +94,15 @@ function T = track(T, frame)
         feature_negative = size(T.target.neg_feature_tot,1)
         sample= [T.target.pos_feature_tot; T.target.neg_feature_tot];
         label = [ones(feature_positive,1) zeros(feature_positive,1); zeros(feature_negative,1) ones(feature_negative,1)];
-        A = T.target.A;
+        %A = T.target.A;
+        A = eye(225);
         [Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
         T.target.A = reshape(Anew,225,225);
         T.target.pos_feature_tot = [];
         T.target.neg_feature_tot = [];
+        T.target.G = g;
       end
-      T.target.G = g;
+      
   end
 
 %end

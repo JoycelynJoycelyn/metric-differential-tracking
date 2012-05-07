@@ -16,7 +16,7 @@ image(frame);
      %draw q
      %rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
      %draw p
-     rectangle('Position', T.target.BB_p, 'EdgeColor', 'g');
+   %  rectangle('Position', T.target.BB_p, 'EdgeColor', 'g');
      
  end
 
