@@ -1,11 +1,6 @@
-function  p  = p_ij(A,X,i,j )
+function  p  = p_ij(A,X,i,j,sum)
 q=exp(-  (norm(A*X(:,i)-A*X(:,j))^2)  );
-sum=0;
-for z=1:size(X,2)
-    if(~(z==i))
-        sum = sum + exp(-(norm(A*X(:,i)-A*X(:,z)))^2);
-    end
-end
+
 p=q/sum;    
 return
 end
