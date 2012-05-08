@@ -85,12 +85,12 @@ function T = track(T, frame)
       T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
       T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
       if(size(T.target.pos_feature_tot,1)>3*campioni_pos)
-        T.target.pos_feature_tot = T.target.pos_feature_tot(campioni+1:size(T.target.pos_feature_tot,1),:);
+        T.target.pos_feature_tot = T.target.pos_feature_tot(campioni_pos+1:size(T.target.pos_feature_tot,1),:);
       %  T.target.neg_feature_tot = T.target.neg_feature_tot(campioni+1:size(T.target.neg_feature_tot,1),:);  
       end
       if(size(T.target.neg_feature_tot,1)>3*campioni_neg)
       %  T.target.pos_feature_tot = T.target.pos_feature_tot(campioni+1:size(T.target.pos_feature_tot,1),:);
-        T.target.neg_feature_tot = T.target.neg_feature_tot(campioni+1:size(T.target.neg_feature_tot,1),:);  
+        T.target.neg_feature_tot = T.target.neg_feature_tot(campioni_neg+1:size(T.target.neg_feature_tot,1),:);  
       end
       
       g=G(T.target.A, T.target.pos_feature_tot', T.target.neg_feature_tot')         

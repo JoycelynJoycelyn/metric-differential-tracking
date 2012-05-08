@@ -5,6 +5,10 @@ function T = writeVideo( T )
         open(T.outputCreator.video);
     end
     fr = getframe;
+    
+  %  image(fr.cdata)
+    
+    
     writeVideo(T.outputCreator.video,fr);
 
 return
