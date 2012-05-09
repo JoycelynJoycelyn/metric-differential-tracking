@@ -27,8 +27,8 @@ function T = track(T, frame)
      % neg_offset = [];
       pos_feature = [];
      % pos_offset = [];
-      soglia_pos=0.78;
-      soglia_neg=0.05;
+      soglia_pos=0.6;
+    soglia_neg=0.01;
 %       for(i=1:size(T.target.pos_offset,1))
 %           rect = T.target.BB_p+T.target.pos_offset(i,:);
 %           if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
@@ -47,8 +47,8 @@ function T = track(T, frame)
         rectangle('Position', obj_box, 'EdgeColor', 'b');
         drawnow;
         %campioni= 5;
-        campioni_pos = 3;
-        campioni_neg = 5;
+        campioni_pos = 5;
+        campioni_neg = 15;
        while(size(pos_feature,1) < campioni_pos || size(neg_feature,1) < campioni_neg)
            
         offset = (min(T.target.BB_p(3), T.target.BB_p(4))/2) * randn(1,2);
@@ -100,9 +100,10 @@ function T = track(T, frame)
         sample= [T.target.pos_feature_tot; T.target.neg_feature_tot];
         label = [ones(feature_positive,1) zeros(feature_positive,1); zeros(feature_negative,1) ones(feature_negative,1)];
         %A = T.target.A;
-        A = eye(225);
+        %A = eye(225);
+        A = [eye(50) zeros(50,175)];
         [Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
-        T.target.A = reshape(Anew,225,225);
+        T.target.A = reshape(Anew,50,225);
         T.target.pos_feature_tot = [];
         T.target.neg_feature_tot = [];
         T.target.G = g;
