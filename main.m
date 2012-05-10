@@ -28,7 +28,7 @@ q = zeros(225,1)';
 I2 = double(I2);
 % I2 = rgb2hsv(I2);
 % HSV = sum(I2, 3) + eps;
-% h = I2(:, :, 1) ./ HSV;
+% h = I2(:, :, 1) ./ max(max(I2(:, :, 1)));
 % s = I2(:, :, 2) ./ HSV;
 % v = I2(:, :, 3) ./ HSV;
 % 
@@ -48,8 +48,12 @@ I2 = double(I2);
 U = get_U(I2, 225);
 K = get_K(I2);%, rect, i_c, j_c); %gi? normalizzato, pixel centrati e la relativa distanza dal centro
 
-q = U' * K
+q = U' * K;
 J = get_J(I2, rect);%, i_c, j_c);
+q = q +1 ;
+q = q ./ sum(q);
+q
+sum(q)
 
 Kmn = reshape(K, size(I2,1), size(I2,2));
 figure(2);

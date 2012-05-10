@@ -14,10 +14,13 @@ while nextFrame(vr)
   image(frame);
   
   if T.frame_number == 2
-      T.target.BB_q = [ 62 258   22   22 ];
+      %T.target.BB_q = [ 58 255   25   25 ];
       T.target.pos_feature_tot = [];
       T.target.neg_feature_tot = [];
       %T.target.BB_q = [ 31 31 24 24 ];
+      T.target.BB_q = getrect;
+      T.target.BB_q
+      pause();
       %T.target.BB_q
       T.target.BB_p = T.target.BB_q;
       T.target.subIm = im2double(imcrop(frame, T.target.BB_q));

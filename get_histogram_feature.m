@@ -6,5 +6,8 @@ U = get_U(subIm, m);
 K = get_K(subIm); %già normalizzato, pixel centrati e la relativa distanza dal centro
 q = U' * K;
 
+q = q + 0.01 ;
+q = q ./ sum(q);
+%sum(q)
 
 end

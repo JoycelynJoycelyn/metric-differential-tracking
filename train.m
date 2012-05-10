@@ -8,7 +8,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
 %     positive_sample=10; 
 %     negative_sample=10;
     soglia_pos=0.65;
-    soglia_neg=0.05;
+    soglia_neg=0.005;
 
 
     pos_feature = [];
@@ -22,7 +22,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
         if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
             
             inters=intersectBB(obj_box,rect);
-
+            inters
             if(inters<soglia_neg && size(neg_feature,1) < negative_sample)
                      subImg= im2double(imcrop(frame,rect));
                      feature= get_histogram_feature(subImg, rect, 225)';
