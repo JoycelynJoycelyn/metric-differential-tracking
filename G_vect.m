@@ -1,7 +1,13 @@
 function g = G_vect(  A, pos_sample, neg_sample)
     sample = [pos_sample neg_sample];
-    X = - (  pdist((A*sample)') .^2);
-    den_i = sum(X,2)-diag(x); 
+  %  size(sample)
+  %  pause()
+    X = exp(squareform( - (  pdist((A*sample)') .^2) ));
+  %  size(X)
+    %reshape(X, size(sample,2), size(sample,2)-1);
+  %  size(X)
+  %  pause()
+    den_i = sum(X,2)-diag(X); 
     X = X ./repmat(den_i,1,size(X,2));
     pos_pij = X(1:size(pos_sample,2),1:size(pos_sample,2));
     neg_pij = X(size(pos_sample,2)+1:size(X,1),size(pos_sample,2)+1:size(X,1));
