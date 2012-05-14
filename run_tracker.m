@@ -20,17 +20,20 @@ while nextFrame(vr)
       %T.target.BB_q = [ 31 31 24 24 ];
       T.target.BB_q = getrect;
       T.target.BB_q
-      pause();
+      T.target.BB_q(3) = ceil(T.target.BB_q(3));
+      T.target.BB_q(4) = ceil(T.target.BB_q(4));
+      T.target.BB_q
+      %pause();
       %T.target.BB_q
       T.target.BB_p = T.target.BB_q;
       T.target.subIm = im2double(imcrop(frame, T.target.BB_q));
       rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
       drawnow;
-      pause(10);
-      T = train(frame,T.target.BB_q, 15, 30, T);
-      T.target.q = get_histogram_feature(T.target.subIm, T.target.BB_q, 225);
-      
-      
+      %pause(10);
+      T.target.K = get_K(T.target.subIm);
+      T.target.J = get_J(T.target.subIm);
+      T.target.q = get_histogram_feature(T, T.target.subIm, 225);
+      T = train(frame,T.target.BB_q, 10, 20, T);
           
   end
   

@@ -3,8 +3,8 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
 
 
     %numero di campioni true= (2 x true_sample + 1)^2
-    obj_box=ceil(obj_box);
-    h=rg_hist(imcrop(frame,obj_box));
+  %  obj_box=ceil(obj_box);
+   % h=rg_hist(imcrop(frame,obj_box));
 %     positive_sample=10; 
 %     negative_sample=10;
     soglia_pos=0.85;
@@ -16,7 +16,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     neg_feature = [];
     neg_offset = [];
     while(size(pos_feature,1) < positive_sample || size(neg_feature,1) < negative_sample)
-        offset = (min(obj_box(3), obj_box(4))/2) * randn(1,2);
+        offset = ceil((min(obj_box(3), obj_box(4))/2) * randn(1,2));
         offset = [offset 0 0];
         rect = obj_box+offset;
         if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
@@ -26,7 +26,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
             if(inters>soglia_pos && size(pos_feature,1) < positive_sample)
                 %positive sample
                 subImg= im2double(imcrop(frame,rect));
-                feature= get_histogram_feature(subImg, rect, 225)';
+                feature= get_histogram_feature(T, subImg, 225)';
              %   pos_offset =[pos_offset; offset];
                 pos_feature = [pos_feature; feature]; 
                 %disegnamo il campione positivo sul frame
@@ -37,7 +37,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
             %if(size(neg_feature,1) < negative_sample && inters < soglia_pos)
                 %negative sample
                      subImg= im2double(imcrop(frame,rect));
-                     feature= get_histogram_feature(subImg, rect, 225)';
+                     feature= get_histogram_feature(T, subImg, 225)';
                %      neg_offset = [neg_offset; offset];
                      neg_feature = [neg_feature; feature];
                      %disegnamo il campione negativo sul frame
