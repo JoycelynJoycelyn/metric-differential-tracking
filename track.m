@@ -31,7 +31,7 @@ function T = track(T, frame)
       pos_feature = [];
      % pos_offset = [];
       soglia_pos=0.85;
-    soglia_neg=0.15;
+    soglia_neg=0.3;
 %       for(i=1:size(T.target.pos_offset,1))
 %           rect = T.target.BB_p+T.target.pos_offset(i,:);
 %           if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
@@ -50,10 +50,10 @@ function T = track(T, frame)
           drawnow;
 %          %campioni= 5;
          campioni_pos = 5;
-         campioni_neg = 10;
+         campioni_neg = 20;
 %         rng('default');
         while(size(pos_feature,1) < campioni_pos || size(neg_feature,1) < campioni_neg)
-         offset = ceil((min(T.target.BB_p(3), T.target.BB_p(4))/2) * randn(1,2));
+         offset = ceil((min(T.target.BB_p(3), T.target.BB_p(4))/4) * randn(1,2));
          offset = [offset 0 0];
          rect = obj_box+offset;
          if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
@@ -87,22 +87,22 @@ function T = track(T, frame)
       end
        
       T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
-      T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
+      %T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
       %T.target.pos_feature_tot =  pos_feature ;
-      %T.target.neg_feature_tot =  neg_feature ;
+      T.target.neg_feature_tot =  neg_feature ;
     if(size(T.target.pos_feature_tot,1) > 4*campioni_pos)
        T.target.pos_feature_tot = T.target.pos_feature_tot(campioni_pos + 1:size(T.target.pos_feature_tot,1),:);
     end
-    if(size(T.target.neg_feature_tot,1) > 4*campioni_neg)
-       T.target.neg_feature_tot = T.target.neg_feature_tot(campioni_neg + 1:size(T.target.neg_feature_tot,1),:);  
-    end
+    %if(size(T.target.neg_feature_tot,1) > 4*campioni_neg)
+      % T.target.neg_feature_tot = T.target.neg_feature_tot(campioni_neg + 1:size(T.target.neg_feature_tot,1),:);  
+    %end
        
        %g=G(T.target.A, T.target.pos_feature_tot', T.target.neg_feature_tot')  
       g = G_vect(T.target.A, T.target.pos_feature_tot', T.target.neg_feature_tot')
-      if(g < T.target.G*0.75 || isnan(g) == 1|| g > T.target.G*1.25 || isinf(abs(g)) == 1 )
+      if(abs(g) > abs(T.target.G)*1.3 || isnan(g) == 1)%|| g > T.target.G*1.25 || isinf(abs(g)) == 1 )
       %if(abs(g) > 10^(-4) || isnan(g) == 1 || isinf(abs(g)) == 1 )
         T.target.pos_feature_tot = T.target.pos_feature_tot(1:size(T.target.pos_feature_tot,1) - size(pos_feature,1), :);
-        T.target.neg_feature_tot = T.target.neg_feature_tot(1:size(T.target.neg_feature_tot,1) - size(neg_feature,1), :);  
+        %T.target.neg_feature_tot = T.target.neg_feature_tot(1:size(T.target.neg_feature_tot,1) - size(neg_feature,1), :);  
         feature_positive = size(T.target.pos_feature_tot,1);
         feature_negative = size(T.target.neg_feature_tot,1);
         sample= [T.target.pos_feature_tot; T.target.neg_feature_tot];

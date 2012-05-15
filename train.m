@@ -7,8 +7,8 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
    % h=rg_hist(imcrop(frame,obj_box));
 %     positive_sample=10; 
 %     negative_sample=10;
-    soglia_pos=0.85;
-    soglia_neg=0.25;
+    soglia_pos=0.8;
+    soglia_neg=0.3;
 
 
     pos_feature = [];
@@ -16,7 +16,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     neg_feature = [];
     neg_offset = [];
     while(size(pos_feature,1) < positive_sample || size(neg_feature,1) < negative_sample)
-        offset = ceil((min(obj_box(3), obj_box(4))/2) * randn(1,2));
+        offset = ceil((min(obj_box(3), obj_box(4))/4) * randn(1,2));
         offset = [offset 0 0];
         rect = obj_box+offset;
         if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
@@ -71,7 +71,9 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     %T.target.pos_feature_tot = [ ];
     %T.target.neg_feature_tot = [ ];
      
-    T.target.G = G_vect(A, pos_feature',neg_feature')
+    T.target.G = G_vect(T.target.A, pos_feature',neg_feature')
+    T.target.G
+    
     
 % randn(2,1)    
 return 

@@ -2,7 +2,7 @@ function g = G_vect(  A, pos_sample, neg_sample)
     sample = [pos_sample neg_sample];
   %  size(sample)
   %  pause()
-    X = exp(squareform( - (  pdist((A*sample)','jaccard') .^2) ));
+    X = exp(squareform( - (  pdist((A*sample)','euclidean') .^2) ));
   %  size(X)
     %reshape(X, size(sample,2), size(sample,2)-1);
   %  size(X)

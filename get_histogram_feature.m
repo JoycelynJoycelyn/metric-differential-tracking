@@ -30,7 +30,7 @@ if(size(U,1) ~= size(K,1))
     end
     U = get_U(subIm, m);
 
-    pause();
+%    pause();
 end
 q = U' * K;
 
