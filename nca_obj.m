@@ -15,6 +15,7 @@ A = reshape(Avec,length(Avec)/ID,ID);
 [F,dFa] = nca(A,X,Y,A*X');
 dF = 2*A*dFa;
 dF = -dF(:);
+%T.target.F = F;
 F = -F;
 
 AX = (A*X')';

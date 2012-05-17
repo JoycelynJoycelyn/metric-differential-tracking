@@ -1,4 +1,4 @@
-clear all; close all;
+clear all; close all; clc;
 %figure; 
 I = imread('prova_1.jpg');
 %play_video('car-1.avi');
@@ -49,14 +49,21 @@ U = get_U(I2, 225);
 K = get_K(I2);%, rect, i_c, j_c); %gi? normalizzato, pixel centrati e la relativa distanza dal centro
 
 q = U' * K;
-J = get_J(I2, rect);%, i_c, j_c);
-q = q +1 ;
-q = q ./ sum(q);
+%J = get_J(I2, rect);%, i_c, j_c);
+% q = q + 0.0001 ;
+% q = q ./ sum(q);
+% q
+sum(q)
 q
+
+
+q = q ./ norm(q,2)
 sum(q)
 
-Kmn = reshape(K, size(I2,1), size(I2,2));
-figure(2);
-imagesc(Kmn, [min(Kmn(:)) max(Kmn(:))]);
-figure(3)
-imagesc(J(:,1))
+q'*q
+
+% Kmn = reshape(K, size(I2,1), size(I2,2));
+% figure(2);
+% imagesc(Kmn, [min(Kmn(:)) max(Kmn(:))]);
+%figure(3)
+%imagesc(J(:,1))

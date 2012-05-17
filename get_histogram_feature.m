@@ -33,9 +33,10 @@ if(size(U,1) ~= size(K,1))
 %    pause();
 end
 q = U' * K;
+q = q ./ norm(q,2);
 
-q = q + 0.001 ;
-q = q ./ sum(q);
+%q = q + 0.001 ;
+%q = q ./ sum(q);
 %sum(q)
 
 end

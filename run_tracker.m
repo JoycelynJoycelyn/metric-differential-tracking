@@ -33,7 +33,8 @@ while nextFrame(vr)
       T.target.K = get_K(T.target.subIm);
       T.target.J = get_J(T.target.subIm);
       T.target.q = get_histogram_feature(T, T.target.subIm, 225);
-      T = train(frame,T.target.BB_q, 20, 25, T);
+      T.target.G_hist = [];
+      T = train(frame,T.target.BB_q, 25, 35, T);
           
   end
   
