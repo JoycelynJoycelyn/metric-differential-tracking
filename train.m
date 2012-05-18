@@ -10,14 +10,16 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     soglia_pos=0.5;
     soglia_neg=0.1;
 
-
+    T.target.offset.pos = [];
+    T.target.offset.neg = [];
     pos_feature = [];
     pos_offset = [];
     neg_feature = [];
     neg_offset = [];
     while(size(pos_feature,1) < positive_sample || size(neg_feature,1) < negative_sample)
-        offset = ceil((min(obj_box(3), obj_box(4))/4) * randn(1,2));
-        offset = [offset 0 0];
+        offset = ceil([    [obj_box(3)/4 obj_box(4)/4].*randn(1,2)    0 0]);
+        %offset = ceil((min(obj_box(3), obj_box(4))/4) * randn(1,2));
+        %offset = [offset 0 0];
         rect = obj_box+offset;
         if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
             
@@ -25,6 +27,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
             
             if(inters>soglia_pos && size(pos_feature,1) < positive_sample)
                 %positive sample
+                T.target.offset.pos = [T.target.offset.pos ; offset];
                 subImg= im2double(imcrop(frame,rect));
                 feature= get_histogram_feature(T, subImg, 225)';
              %   pos_offset =[pos_offset; offset];
@@ -36,6 +39,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
             if(inters<soglia_neg && size(neg_feature,1) < negative_sample)
             %if(size(neg_feature,1) < negative_sample && inters < soglia_pos)
                 %negative sample
+                     T.target.offset.neg=[T.target.offset.neg;offset];
                      subImg= im2double(imcrop(frame,rect));
                      feature= get_histogram_feature(T, subImg, 225)';
                %      neg_offset = [neg_offset; offset];

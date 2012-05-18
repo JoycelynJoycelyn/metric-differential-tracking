@@ -30,61 +30,77 @@ function T = track(T, frame)
      % neg_offset = [];
       pos_feature = [];
      % pos_offset = [];
-      soglia_pos=0.5;
-    soglia_neg=0.1;
-%       for(i=1:size(T.target.pos_offset,1))
-%           rect = T.target.BB_p+T.target.pos_offset(i,:);
-%           if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
-%               subImg= im2double(imcrop(frame,rect));
-%               pos_feature=[pos_feature; get_histogram_feature(subImg, rect, 225)'];
-%           end
-%       end
-%       for(i=1:size(T.target.neg_offset,1))
-%           rect = T.target.BB_p+T.target.neg_offset(i,:);
-%           if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
-%               subImg= im2double(imcrop(frame,rect));
-%               neg_feature=[neg_feature; get_histogram_feature(subImg, rect, 225)'];
-%           end
-%       end
+     soglia_pos=0.5;
+     soglia_neg=0.1;
+     campioni_pos = 10;
+     campioni_neg = 25;
+     random_offset_permutation = 1;
+     pos_offset_ind = [];
+     neg_offset_ind = [];
+     %random_offset_permutation = 0;
+     if(random_offset_permutation)
+        pos_offset_ind = randperm(size(T.target.offset.pos,1));
+        neg_offset_ind = randperm(size(T.target.offset.neg,1));
+     end    
+     for i=1:campioni_pos
+          if(isempty(pos_offset_ind))
+            rect = T.target.BB_p+T.target.offset.pos(i,:);
+          else
+            rect = T.target.BB_p+T.target.offset.pos(pos_offset_ind(i),:);
+          end
+          if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
+              subImg= im2double(imcrop(frame,rect));
+              pos_feature=[pos_feature; get_histogram_feature(T, subImg, 225)'];
+          end
+      end
+      for i=1:campioni_neg
+          if(isempty(neg_offset_ind))
+            rect = T.target.BB_p+T.target.offset.neg(i,:);
+          else
+            rect = T.target.BB_p+T.target.offset.neg(neg_offset_ind(i),:);
+          end
+          if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
+              subImg= im2double(imcrop(frame,rect));
+              neg_feature=[neg_feature; get_histogram_feature(T, subImg, 225)'];
+          end
+      end
           obj_box = T.target.BB_p;
           drawnow;
 %          %campioni= 5;
-         campioni_pos = 10;
-         campioni_neg = 25;
-         rng('default');
-        while(size(pos_feature,1) < campioni_pos || size(neg_feature,1) < campioni_neg)
-         offset = ceil((min(T.target.BB_p(3), T.target.BB_p(4))/4) * randn(1,2));
-         offset = [offset 0 0];
-         rect = obj_box+offset;
-         if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
-             inters=intersectBB(obj_box,rect);
+%         rng('default');
+%         while(size(pos_feature,1) < campioni_pos || size(neg_feature,1) < campioni_neg)
+%          offset = ceil((min(T.target.BB_p(3), T.target.BB_p(4))/4) * randn(1,2));
+%          offset = [offset 0 0];
+%          rect = obj_box+offset;
+%          if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
+%              inters=intersectBB(obj_box,rect);
+% %             
+%              if(inters>soglia_pos && size(pos_feature,1) < campioni_pos)
+%                  %positive sample
+%                  subImg= im2double(imcrop(frame,rect));
+%                  feature= get_histogram_feature(T ,subImg, 225)';
+%                %  pos_offset =[pos_offset; offset];
+%                 pos_feature = [pos_feature; feature]; 
+%                 %disegnamo il campione positivo sul frame
+%            %     rectangle('Position', rect, 'EdgeColor', 'r');
+%                 drawnow;
+%              end
+%              if(inters<soglia_neg && size(neg_feature,1) < campioni_neg)
 %             
-             if(inters>soglia_pos && size(pos_feature,1) < campioni_pos)
-                 %positive sample
-                 subImg= im2double(imcrop(frame,rect));
-                 feature= get_histogram_feature(T ,subImg, 225)';
-               %  pos_offset =[pos_offset; offset];
-                pos_feature = [pos_feature; feature]; 
-                %disegnamo il campione positivo sul frame
-           %     rectangle('Position', rect, 'EdgeColor', 'r');
-                drawnow;
-             end
-             if(inters<soglia_neg && size(neg_feature,1) < campioni_neg)
-            
-            %if(size(neg_feature,1) < campioni_neg)
-                %negative sample
-                     subImg= im2double(imcrop(frame,rect));
-                     feature= get_histogram_feature(T, subImg, 225)';
-             %        neg_offset = [neg_offset; offset];
-                     neg_feature = [neg_feature; feature];
-                     %disegnamo il campione negativo sul frame
-           %          rectangle('Position', rect, 'EdgeColor', 'y');
-                     drawnow;
-            end
-            
-        end
-
-      end
+%             %if(size(neg_feature,1) < campioni_neg)
+%                 %negative sample
+%                      subImg= im2double(imcrop(frame,rect));
+%                      feature= get_histogram_feature(T, subImg, 225)';
+%              %        neg_offset = [neg_offset; offset];
+%                      neg_feature = [neg_feature; feature];
+%                      %disegnamo il campione negativo sul frame
+%            %          rectangle('Position', rect, 'EdgeColor', 'y');
+%                      drawnow;
+%             end
+%             
+%         end
+%
+%      end
        
       %T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
       %T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];

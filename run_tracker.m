@@ -1,7 +1,7 @@
 function T = run_tracker(fname, T)
 vr = videoReader(fname);
 
-rng('default');
+%rng('default');
 T.time         = 0;
 T.frame_number = 0;
 T.fps          = getfield(get(vr), 'FrameRate');
