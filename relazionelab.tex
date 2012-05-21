@@ -1,0 +1,66 @@
+%% LyX 2.0.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage{natbib}
+\usepackage[applemac]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2.5cm,rmargin=2.5cm}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+
+\title{Adaptive and Discriminative Metric Differential Tracking}
+\author{Gabriele Barni\\Tommaso Garuglieri}
+
+\usepackage{subfig}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduzione}
+
+L' obiettivo di questa esercitazione \`e quello di sperimentare una tecnica di tracking in sequenze video, che incorpora una metrica adattiva all' interno del metodo di tracking differenziale. Questo tipo di approccio prevede una fase di learning  per l' addestramento di una metrica ottima, derivata dalla metrica Mahalanobis (che pesa in maniera differente le feature identificandone alcune più discriminative), e quindi il calcolo della stima del moto in forma chiusa.
+\newline\newline
+La scelta di una metrica  appropriata è fondamentale nelle performance delle operazioni di tracking, così come ne determina la sua accuratezza e robustezza. A differenza di altre tecniche di tracking, il matching viene costruito direttamente tra due frame consecutivi, richiedendo così una soluzione computazionalmente più efficiente. Fondamentale, per le performance, è la scelta dello spazio delle feature, infatti, individuando uno spazio di feature forti (invarianti a cambi di luci e deformazioni locali) si riescono a ottenere buoni risultati anche utilizzando la semplice distanza Euclidea come metrica, ma laddove questo non è possibile, la scelta della metrica diventa fondamentale.
+\newline\newline
+A differenza degli altri metodi che utilizzano una metrica predefinita, il metodo qui studiato permette una migliore separabilità dal background e dagli elementi di disturbo del target da tracciare. Questo metodo non si limita soltanto alle feature legate al colore, ma è applicabile anche ad altre.
+
+\section*{Pipeline del tracker}
+
+La pipeline del tracker studiato prevede i seguenti passaggi : 
+\begin{itemize}
+
+\item Individuazione del target da tracciare, questo può essere eseguito specificando nel dettaglio le relative coordinate nel primo frame del video, oppure tramite una scelta manuale, sempre sul primo frame del video, della regione di interesse. Una volta individuato il target, se ne calcola l' istogramma nello spazio di feature scelto;
+
+\item Fase di training per l' addestramento della metrica adattiva : questa è supervisionata, e consiste nell' individuazione di un insieme di esempi,  positivi e negativi : gli esempi positivi sono individuati nelle regioni del frame immediatamente vicine al target, mentre gli esempi negativi sono individuati in quelle regioni attorno al target. Per ogni esempio preso, se ne calcola l' istogramma, nello stesso spazio delle feature, e con la stessa tecnica, con cui è stato calcolato l' istogramma del target. Questa fase si conclude con il calcolo della matrice $A \ \epsilon \ R^{d \times m}$ (con $d \leq  m$), come risultato di un processo di massimizzazione della funzione $g(A)$ (funzione che esegue una classificazione degli esempi di training) utilizzata poi nella metrica del tracker;
+
+\item  Fase di tracking : per ogni frame, a partire dal target e da una regione candidata, viene calcolato lo spostamento ottimo, $\Delta c$ mediante l' utilizzo della matrice $A$ : da esso viene quindi effettuata la predizione sulla posizione, nel frame successivo, del target. La fase di tracking prevede, inoltre, che per ogni frame vengano raccolti un insieme di esempi positivi e negativi, e, in base ad una soglia, il ricalcolo della matrice $A$.
+
+\end{itemize}
+
+\section*{Adaptive Metric Learning}
+
+Considerazioni teoriche circa la metrica adattiva, con le principali formule e i principali concetti che la interessano.
+
+\section*{Adaptive Metric Differential Tracking}
+
+Considerazioni teoriche sulla tecnica di tracking mean-shift con l' integrazione della metrica adattiva, quindi formule per i calcolo del displacement.
+
+\section*{Implementazione}
+
+Principali fasi affrontate nell 'implementazione della tecnica, con accenno quindi ai problemi incontrati e la loro gestione.
+
+\section*{Sperimentazione}
+
+Sperimentazioni effettuate sui video di test e relativi commenti. Elenco quindi dei video dove la tecnica produce buoni risultati ma anche di video dove la tecnica incontra difficoltà nel tracking. descrizioni nell' impostazione dei parametri utilizzati : numero di campioni positivi e negativi utilizzati per l' addestramento , e ad ogni frame, sogli per le intersezioni nella selezione dei campioni positivi e negativi, soglia per il riaddestramento della metrica.
+
+\section*{Conclusioni}
+
+
+\bibliographystyle{plain}
+\bibliography{BIBLIO}
+\end{document}
+
