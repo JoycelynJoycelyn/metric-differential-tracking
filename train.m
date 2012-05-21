@@ -7,8 +7,6 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
    % h=rg_hist(imcrop(frame,obj_box));
 %     positive_sample=10; 
 %     negative_sample=10;
-    soglia_pos=0.5;
-    soglia_neg=0.1;
 
     T.target.offset.pos = [];
     T.target.offset.neg = [];
@@ -17,7 +15,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     neg_feature = [];
     neg_offset = [];
     while(size(pos_feature,1) < positive_sample || size(neg_feature,1) < negative_sample)
-        offset = ceil([    [obj_box(3)/4 obj_box(4)/4].*randn(1,2)    0 0]);
+        offset = ceil([    [obj_box(3) obj_box(4)].*randn(1,2)    0 0]);
         %offset = ceil((min(obj_box(3), obj_box(4))/4) * randn(1,2));
         %offset = [offset 0 0];
         rect = obj_box+offset;
@@ -25,7 +23,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
             
             inters=intersectBB(obj_box,rect);
             
-            if(inters>soglia_pos && size(pos_feature,1) < positive_sample)
+            if(inters>T.soglia_pos && size(pos_feature,1) < positive_sample)
                 %positive sample
                 T.target.offset.pos = [T.target.offset.pos ; offset];
                 subImg= im2double(imcrop(frame,rect));
@@ -36,8 +34,8 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
                 rectangle('Position', rect, 'EdgeColor', 'r');
                 drawnow;
             end
-            if(inters<soglia_neg && size(neg_feature,1) < negative_sample)
-            %if(size(neg_feature,1) < negative_sample && inters < soglia_pos)
+            if(inters<T.soglia_neg && size(neg_feature,1) < negative_sample)
+            %if(size(neg_feature,1) < negative_sample && inters < T.soglia_pos)
                 %negative sample
                      T.target.offset.neg=[T.target.offset.neg;offset];
                      subImg= im2double(imcrop(frame,rect));
@@ -63,8 +61,11 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     %A = [eye(50) eye(50) eye(50) eye(50) ones(50,25)];
     %A = [ones(50) zeros(50,175)];
     %A = ones(225);
-    [Anew,fX,i] = minimize(A(:),'nca_obj',8,sample,label);
-    
+    [Anew,fX,i] = minimize(A(:),'nca_obj',1,sample,label);
+    while(nca_obj(Anew, sample, label)>1.0e-7)
+            [Anew,fX,i] = minimize(Anew,'nca_obj',1,sample,label);
+    end
+    %[Anew,fX,i] = minimize(A(:),'nca_obj',8,sample,label);
     T.target.A = reshape(Anew,225,225);
    % T.target.G = G(A, pos_feature',neg_feature')
     

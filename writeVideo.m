@@ -4,7 +4,7 @@ function T = writeVideo( T )
         T.outputCreator.video.FrameRate = T.fps;
         open(T.outputCreator.video);
     end
-    fr = getframe;
+    fr = getframe(gcf);
     
   %  image(fr.cdata)
     

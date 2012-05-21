@@ -8,17 +8,19 @@ T.fps          = getfield(get(vr), 'FrameRate');
 T.num_frames   = getfield(get(vr), 'NumberOfFrames');
 
 while nextFrame(vr)
-  
+  subplot('Position',[0.1 0.35 0.85 0.6]);
   T.frame_number = T.frame_number + 1;
   frame = getFrame(vr);
   image(frame);
   
-  if T.frame_number == 2
+  if T.frame_number == 1
       %T.target.BB_q = [ 58 255   25   25 ];
       T.target.pos_feature_tot = [];
       T.target.neg_feature_tot = [];
       %T.target.BB_q = [ 31 31 24 24 ];
-      T.target.BB_q = getrect;
+      if (isempty(T.target.BB_q)) 
+        T.target.BB_q = getrect;
+      end
       T.target.BB_q
       T.target.BB_q(3) = ceil(T.target.BB_q(3));
       T.target.BB_q(4) = ceil(T.target.BB_q(4));
@@ -34,7 +36,7 @@ while nextFrame(vr)
       T.target.J = get_J(T.target.subIm);
       T.target.q = get_histogram_feature(T, T.target.subIm, 225);
       T.target.G_hist = [];
-      T = train(frame,T.target.BB_q, 25, 35, T);
+      T = train(frame,T.target.BB_q, T.num_sample_positivi,T.num_sample_negativi, T);
           
   end
   

@@ -30,19 +30,23 @@ function T = track(T, frame)
      % neg_offset = [];
       pos_feature = [];
      % pos_offset = [];
-     soglia_pos=0.5;
-     soglia_neg=0.1;
-     campioni_pos = 10;
-     campioni_neg = 25;
-     random_offset_permutation = 1;
+     
+
+     
      pos_offset_ind = [];
      neg_offset_ind = [];
-     %random_offset_permutation = 0;
-     if(random_offset_permutation)
+     
+     %random_offset_permutation = 0 fa prendere sempre gli stessi offset,
+     %altrimenti effettua una permutazioni degli indici per prendere gli
+     %offset in maniera casuale tra quelli usati nella fase di train
+     %
+     if(T.random_offset_permutation)
         pos_offset_ind = randperm(size(T.target.offset.pos,1));
         neg_offset_ind = randperm(size(T.target.offset.neg,1));
-     end    
-     for i=1:campioni_pos
+     end
+     
+     % calcolo nuovi campioni positivi
+     for i=1:T.campioni_pos_track
           if(isempty(pos_offset_ind))
             rect = T.target.BB_p+T.target.offset.pos(i,:);
           else
@@ -52,8 +56,10 @@ function T = track(T, frame)
               subImg= im2double(imcrop(frame,rect));
               pos_feature=[pos_feature; get_histogram_feature(T, subImg, 225)'];
           end
-      end
-      for i=1:campioni_neg
+     end
+     
+     % calcolo nuovi campioni negativi
+     for i=1:T.campioni_neg_track
           if(isempty(neg_offset_ind))
             rect = T.target.BB_p+T.target.offset.neg(i,:);
           else
@@ -63,62 +69,26 @@ function T = track(T, frame)
               subImg= im2double(imcrop(frame,rect));
               neg_feature=[neg_feature; get_histogram_feature(T, subImg, 225)'];
           end
-      end
+     end
           obj_box = T.target.BB_p;
           drawnow;
-%          %campioni= 5;
-%         rng('default');
-%         while(size(pos_feature,1) < campioni_pos || size(neg_feature,1) < campioni_neg)
-%          offset = ceil((min(T.target.BB_p(3), T.target.BB_p(4))/4) * randn(1,2));
-%          offset = [offset 0 0];
-%          rect = obj_box+offset;
-%          if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
-%              inters=intersectBB(obj_box,rect);
-% %             
-%              if(inters>soglia_pos && size(pos_feature,1) < campioni_pos)
-%                  %positive sample
-%                  subImg= im2double(imcrop(frame,rect));
-%                  feature= get_histogram_feature(T ,subImg, 225)';
-%                %  pos_offset =[pos_offset; offset];
-%                 pos_feature = [pos_feature; feature]; 
-%                 %disegnamo il campione positivo sul frame
-%            %     rectangle('Position', rect, 'EdgeColor', 'r');
-%                 drawnow;
-%              end
-%              if(inters<soglia_neg && size(neg_feature,1) < campioni_neg)
-%             
-%             %if(size(neg_feature,1) < campioni_neg)
-%                 %negative sample
-%                      subImg= im2double(imcrop(frame,rect));
-%                      feature= get_histogram_feature(T, subImg, 225)';
-%              %        neg_offset = [neg_offset; offset];
-%                      neg_feature = [neg_feature; feature];
-%                      %disegnamo il campione negativo sul frame
-%            %          rectangle('Position', rect, 'EdgeColor', 'y');
-%                      drawnow;
-%             end
-%             
-%         end
-%
-%      end
-       
-      %T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
-      %T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
-      %T.target.pos_feature_tot =  pos_feature ;
-      T.target.neg_feature_tot =  neg_feature ;
-     if(size(T.target.pos_feature_tot,1) > 4*campioni_pos)
-        T.target.pos_feature_tot = T.target.pos_feature_tot(campioni_pos + 1:size(T.target.pos_feature_tot,1),:);
+
+     %aggiungo i nuovi campioni a quelli ricavati precedentemente  
+     T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
+     T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
+    
+     if(size(T.target.pos_feature_tot,1) > T.tot_campioni_pos)
+        T.target.pos_feature_tot = T.target.pos_feature_tot(size(T.target.pos_feature_tot,1) - T.tot_campioni_pos + 1:size(T.target.pos_feature_tot,1),:);
      end
-%     if(size(T.target.neg_feature_tot,1) > 4*campioni_neg)
-%       T.target.neg_feature_tot = T.target.neg_feature_tot(campioni_neg + 1:size(T.target.neg_feature_tot,1),:);  
-%     end
+     if(size(T.target.neg_feature_tot,1) > T.tot_campioni_neg)
+       T.target.neg_feature_tot = T.target.neg_feature_tot(size(T.target.neg_feature_tot,1) - T.tot_campioni_neg + 1:size(T.target.neg_feature_tot,1),:);  
+     end
        
        %g=G(T.target.A, T.target.pos_feature_tot', T.target.neg_feature_tot')
-      feature_positive = size(T.target.pos_feature_tot,1);
-      feature_negative = size(T.target.neg_feature_tot,1);
+      
       %g = G_vect(T.target.A, T.target.pos_feature_tot', T.target.neg_feature_tot')
       sample= [T.target.pos_feature_tot; T.target.neg_feature_tot];
-      label = [ones(feature_positive,1) zeros(feature_positive,1); zeros(feature_negative,1) ones(feature_negative,1)];
+      label = [ones(T.tot_campioni_pos,1) zeros(T.tot_campioni_pos,1); zeros(T.tot_campioni_neg,1) ones(T.tot_campioni_neg,1)];
       %T.target.G = G_vect(T.target.A, pos_feature',neg_feature');
       [T.target.F T.target.dF] =  nca_obj(T.target.A(:), sample, label);
       T.target.F = - T.target.F;
@@ -127,11 +97,11 @@ function T = track(T, frame)
 %     g
 %     pause();
     
-      g = T.target.F;
+      g = T.target.F
       dat = [g; T.frame_number];
       T.target.G_hist = [T.target.G_hist dat];
-      if(abs(g) > abs(T.target.G)*1.3)% || isnan(g) == 1)%|| g > T.target.G*1.25 || isinf(abs(g)) == 1 )
-      %if(abs(g) > 10^(-4) || isnan(g) == 1 || isinf(abs(g)) == 1 )
+      %if(abs(g) > abs(T.target.G)*1.3)% || isnan(g) == 1)%|| g > T.target.G*1.25 || isinf(abs(g)) == 1 )
+      if(abs(g) > T.threshold || isnan(g) == 1 || isinf(abs(g)) == 1 )
         T.target.pos_feature_tot = T.target.pos_feature_tot(1:size(T.target.pos_feature_tot,1) - size(pos_feature,1), :);
         %T.target.neg_feature_tot = T.target.neg_feature_tot(1:size(T.target.neg_feature_tot,1) - size(neg_feature,1), :);  
         feature_positive = size(T.target.pos_feature_tot,1);
@@ -143,7 +113,12 @@ function T = track(T, frame)
         %A = [eye(50) zeros(50,175)];
         %A = [ones(1,112) zeros(1,113);zeros(1,112) ones(1,113)];
         %A = [eye(50) eye(50) eye(50) eye(50) ones(50,25)];
-        [Anew,fX,i] = minimize(A(:),'nca_obj',5,sample,label);
+        
+        [Anew,fX,i] = minimize(A(:),'nca_obj',1,sample,label);
+        while(nca_obj(Anew, sample, label)>1.0e-7)
+            [Anew,fX,i] = minimize(Anew,'nca_obj',1,sample,label);
+        end
+        %[Anew,fX,i] = minimize(T.target.A(:),'nca_obj',5,sample,label);
         T.target.A = reshape(Anew,225,225);
         %T.target.pos_feature_tot = [];
         %T.target.neg_feature_tot = [];
@@ -159,9 +134,9 @@ function T = track(T, frame)
         dat = [T.target.G; T.frame_number];
         T.target.G_hist = [T.target.G_hist dat];
       end
-      % figure(3);
-      % plot(T.target.G_hist(2,:) , T.target.G_hist(1,:));
-      % figure(1);
+      subplot('Position',[0.1 0.05 0.85 0.25]);
+      semilogy(T.target.G_hist(2,:) , T.target.G_hist(1,:));
+      subplot('Position',[0.1 0.35 0.85 0.6]);
       % T.target.G = g;
   end
 
