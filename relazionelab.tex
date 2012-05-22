@@ -55,18 +55,20 @@ $$ \mathcal{D}(\mathbf{x}_{i},\mathbf{x}_{j} ) = (\mathbf{Ax}_i -  \mathbf{Ax}_j
 
 Questa viene parametrizzata mediante l' uso della matrice $\mathbf{A} \ \mathcal{2} \ \mathbb{R}^{d \times m}$ che trasforma linearmente lo spazio originario delle feature, $\mathbb{R}^m$, in un nuovo spazio $\mathbb{R}^d$ (dove $d \leq m$). La matrice $\mathbf{Q} = \mathbf{A}^T\mathbf{A}$. Una volta acquisiti i dati di training (campioni positivi e campioni negativi) otteniamo la matrice $\mathbf{A}$. Questa permette di riportarci in un nuovo spazio, dove la distanza fra i dati di una stessa classe viene ridotta, mentre viene aumentata quella da i dati di una classe differente. 
 
+\vspace{0.5cm}
+
 Come precedente introdotto, la fase di learning prevede l' acquisizione di un set di campioni positivi e un set di campioni negativi. A partire dalla regione di interesse (target) i campioni positivi vengono acquisiti in quelle regioni ottenute spostando la regione del target di pochi pixel. I campioni negativi, invece, vengono individuati in quelle regioni che possono creare problemi di falsi positivi.
 
 %%mettere immagine di esempio
-
-In base ai dati acquisiti, il tracker è in grado di eseguire una classificazione accurata, oltre a non avere problemi legati all' individuazione di falsi positivi. La matrice $\mathbf{A}$  permette di ottenere le migliori performance di classificazione, per un classificatore di tipo Nearest Neighbour (k-NN), nel nuovo spazio a $d$ dimensioni. Il classificatore esegue una predizione sulla classe di un dato in ingresso in basse alle informazioni sui k dati più vicini, in base a una metrica data. Questo metodo non è comunque differenziabile rispetto ad $\mathbf{A}$, per questo viene utilizzata una rappresentazione più semplice dei nearest neighbours. Per misurare la relazione di vicinanza tra due coppie di vettori $x_i$ e $x_j$ del training set, viene utilizzata una misura probabilistica $p_{ij}$ : 
+\vspace{0.5cm}
+In base ai dati acquisiti, il tracker è in grado di eseguire una classificazione accurata, oltre a non avere problemi legati all' individuazione di falsi positivi. La matrice $\mathbf{A}$  permette di ottenere le migliori performance di classificazione, per un classificatore di tipo Nearest Neighbour (k-NN), nel nuovo spazio a $d$ dimensioni. Il classificatore esegue una predizione sulla classe di un dato in ingresso in basse alle informazioni sui k dati più vicini, in base a una metrica data. Questo metodo non è comunque differenziabile rispetto ad $\mathbf{A}$, per questo viene utilizzata una rappresentazione più semplice dei nearest neighbours. Dato l' insieme di vettori del training set $x_1, x_2, ... , x_n \ \mathcal{2} \ \mathbb{R}^m$, con le corrispondenti etichette  delle relative classi $c_1,c_2, ... , c_n$, si misura la relazione di vicinanza tra due coppie di vettori $x_i$ e $x_j$ mediante una misura probabilistica $p_{ij}$ : 
 $$p_{ij} = \frac{\text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_j  \| ^2)}{ \sum_{k \neq i} \text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_k  \| ^2)}$$.
 
-Quindi ogni vettore di feature $x_i$ tratta un altro vettore di feature $x_j$ con probabilità $p_{ij}$. Possiamo quindi individuare la probabilità $p_i$ che il punto $i$ venga correttamente classificato :
+Quindi ogni vettore di feature $x_i$,  tratta un altro vettore $x_j$ con probabilità $p_{ij}$, e ne eredita quindi l' etichetta relativa alla classe. Possiamo quindi individuare la probabilità $p_i$ che il punto $i$ venga correttamente classificato :
 
 $$p_i=\sum_{j \mathcal{2} C_i} p_{ij}$$
 
-dove $C_i = \{ j | c_i = c_j \}$
+dove $C_i = \{ j | c_i = c_j \}$.
 
 %%da chiarire ? e concludere
 
