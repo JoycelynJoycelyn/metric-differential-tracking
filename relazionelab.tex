@@ -62,13 +62,25 @@ Come precedente introdotto, la fase di learning prevede l' acquisizione di un se
 %%mettere immagine di esempio
 \vspace{0.5cm}
 In base ai dati acquisiti, il tracker è in grado di eseguire una classificazione accurata, oltre a non avere problemi legati all' individuazione di falsi positivi. La matrice $\mathbf{A}$  permette di ottenere le migliori performance di classificazione, per un classificatore di tipo Nearest Neighbour (k-NN), nel nuovo spazio a $d$ dimensioni. Il classificatore esegue una predizione sulla classe di un dato in ingresso in basse alle informazioni sui k dati più vicini, in base a una metrica data. Questo metodo non è comunque differenziabile rispetto ad $\mathbf{A}$, per questo viene utilizzata una rappresentazione più semplice dei nearest neighbours. Dato l' insieme di vettori del training set $x_1, x_2, ... , x_n \ \mathcal{2} \ \mathbb{R}^m$, con le corrispondenti etichette  delle relative classi $c_1,c_2, ... , c_n$, si misura la relazione di vicinanza tra due coppie di vettori $x_i$ e $x_j$ mediante una misura probabilistica $p_{ij}$ : 
-$$p_{ij} = \frac{\text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_j  \| ^2)}{ \sum_{k \neq i} \text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_k  \| ^2)}$$.
+$$p_{ij} = \frac{\text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_j  \| ^2)}{ \sum_{k \neq i} \text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_k  \| ^2)}.$$
 
-Quindi ogni vettore di feature $x_i$,  tratta un altro vettore $x_j$ con probabilità $p_{ij}$, e ne eredita quindi l' etichetta relativa alla classe. Possiamo quindi individuare la probabilità $p_i$ che il punto $i$ venga correttamente classificato :
+Quindi ogni vettore di feature $x_i$,  tratta un altro vettore $x_j$ con probabilità $p_{ij}$, e ereditandone l' etichetta relativa alla classe. Possiamo quindi individuare la probabilità $p_i$ che il punto $i$ venga correttamente classificato :
 
 $$p_i=\sum_{j \mathcal{2} C_i} p_{ij}$$
 
-dove $C_i = \{ j | c_i = c_j \}$.
+dove $C_i = \{ j | c_i = c_j \}$. L' obiettivo è quindi quello di massimizzare il numero di punti del training set correttamente classificati. Per far ciò viene utilizzata la seguente funzione obiettivo : 
+
+$$ g(\mathbf{A}) = \sum_i log( \sum_{j \mathcal{2} C_i} p_{ij}) = \sum_i log(p_i) .$$
+
+Quindi l' obiettivo è quello di individuare la trasformazione $\mathbf{A}$ che massimizzi il numero di punti correttamente classificati nel training set, cioè :
+
+$$\mathbf{A^*} = \arg \max_{\mathbf{A}} g(\mathbf{A}).$$
+
+Questo problema di ottimizzazione può essere affrontato mediante una qualsiasi tecnica basata sul gradiente, dato che quello della funzione $ g(\mathbf{A})$ può essere ottenuto in forma chiusa :
+
+$$ \frac{\partial g}{\partial \mathbf{A}}  = 2\mathbf{A} \sum_i (\sum_k  p_{ik} x_{ik} x_{ik}^T - \frac{\sum_{j \mathcal{2} C_i} p_{ij}x_{ij}x_{ij}^T}{\sum_{j \mathcal{2} C_i} p_{ij}})$$
+
+dove $x_{ij} = x_i - x_j$.
 
 %%da chiarire ? e concludere
 
