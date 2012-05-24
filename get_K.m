@@ -27,6 +27,6 @@ for i = 1 : size(subIm,2)
        end
 end
 
-%K = (1/C) * K ; 
+    K = (1/C) * K ; 
     
 end

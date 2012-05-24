@@ -15,10 +15,12 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     neg_feature = [];
     neg_offset = [];
     while(size(pos_feature,1) < positive_sample || size(neg_feature,1) < negative_sample)
-        offset = ceil([    [obj_box(3) obj_box(4)].*randn(1,2)    0 0]);
+        offset = ceil([   [size(frame,2) size(frame,1)].*rand(1,2)    obj_box(3) obj_box(4)]);
+        %offset = ceil([    [4*obj_box(3) 4*obj_box(4)].*randn(1,2)    0 0]);
         %offset = ceil((min(obj_box(3), obj_box(4))/4) * randn(1,2));
         %offset = [offset 0 0];
-        rect = obj_box+offset;
+        rect = offset;
+        %rect = obj_box+offset;
         if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
             
             inters=intersectBB(obj_box,rect);
@@ -50,10 +52,15 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
         end
 
     end
-    
+    if isfield(T,'outputCreator')
+        for i=1:2*T.fps
+            T = T.outputCreator.write(T);
+        end
+    end 
 %     feature_positive = size(pos_feature,1)
 %     feature_negative = size(neg_feature,1)
     sample= [pos_feature; neg_feature];
+    %label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),T.num_sample_negativi); zeros(size(neg_feature,1),1) eye(T.num_sample_negativi)];
     label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),1); zeros(size(neg_feature,1),1) ones(size(neg_feature,1),1)];
     %A = [eye(100) zeros(100,125)];
     A = eye(225);
@@ -62,7 +69,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     %A = [ones(50) zeros(50,175)];
     %A = ones(225);
     [Anew,fX,i] = minimize(A(:),'nca_obj',1,sample,label);
-    while(nca_obj(Anew, sample, label)>1.0e-7)
+    while(nca_obj(Anew, sample, label)>1.0e-5)
             [Anew,fX,i] = minimize(Anew,'nca_obj',1,sample,label);
     end
     %[Anew,fX,i] = minimize(A(:),'nca_obj',8,sample,label);

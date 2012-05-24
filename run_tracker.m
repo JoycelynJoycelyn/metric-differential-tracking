@@ -1,4 +1,5 @@
 function T = run_tracker(fname, T)
+close all;
 vr = videoReader(fname);
 
 %rng('default');
@@ -6,7 +7,8 @@ T.time         = 0;
 T.frame_number = 0;
 T.fps          = getfield(get(vr), 'FrameRate');
 T.num_frames   = getfield(get(vr), 'NumberOfFrames');
-
+scrsz = get(0,'ScreenSize');
+figure('Position',[0.3 0.3 scrsz(3)/2 3*scrsz(4)/4]);
 while nextFrame(vr)
   subplot('Position',[0.1 0.35 0.85 0.6]);
   T.frame_number = T.frame_number + 1;
