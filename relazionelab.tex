@@ -23,11 +23,11 @@
 
 \section*{Introduzione}
 
-L' obiettivo di questa esercitazione \`e quello di sperimentare una tecnica di tracking in sequenze video, che incorpora una metrica adattiva all' interno del metodo di tracking differenziale. Questo tipo di approccio prevede una fase di learning  per l' addestramento di una metrica ottima, derivata dalla metrica Mahalanobis (che pesa in maniera differente le feature identificandone alcune più discriminative), e quindi il calcolo della stima del moto in forma chiusa.
+L' obiettivo di questa esercitazione \`e quello di sperimentare una tecnica di tracking in sequenze video, che incorpora una metrica adattiva all' interno del metodo di tracking differenziale. Questo tipo di approccio prevede una fase di learning  per l' addestramento di una metrica ottima derivata dalla metrica Mahalanobis,  e quindi il calcolo della stima del moto in forma chiusa.
 \newline\newline
-La scelta di una metrica  appropriata è fondamentale nelle performance delle operazioni di tracking, così come ne determina la sua accuratezza e robustezza. A differenza di altre tecniche di tracking, il matching viene costruito direttamente tra due frame consecutivi, richiedendo così una soluzione computazionalmente più efficiente. Fondamentale, per le performance, è la scelta dello spazio delle feature, infatti, individuando uno spazio di feature forti (invarianti a cambi di luci e deformazioni locali) si riescono a ottenere buoni risultati anche utilizzando la semplice distanza Euclidea come metrica, ma laddove questo non è possibile, la scelta della metrica diventa fondamentale.
+La scelta di una metrica  appropriata è fondamentale nelle performance delle operazioni di tracking, poiché ne determina la sua accuratezza e robustezza. A differenza di altre tecniche di tracking, il matching viene costruito direttamente tra due frame consecutivi, richiedendo così una soluzione computazionalmente più efficiente. Fondamentale, per le performance, è la scelta dello spazio delle feature : individuando uno spazio di feature forti (invarianti a cambi di luci e deformazioni locali) si riescono a ottenere buoni risultati anche utilizzando la semplice distanza Euclidea come metrica, ma laddove questo non è possibile, la scelta della metrica diventa fondamentale.
 \newline\newline
-A differenza degli altri metodi che utilizzano una metrica predefinita, il metodo qui studiato permette una migliore separabilità dal background e dagli elementi di disturbo del target da tracciare. Questo metodo non si limita soltanto alle feature legate al colore, ma è applicabile anche ad altre.
+A differenza degli altri metodi che utilizzano una metrica predefinita, il metodo qui studiato permette una migliore separabilità del target dal background e da altri elementi di disturbo. Questo metodo non si limita soltanto alle feature legate al colore, ma è applicabile anche ad altre.
 
 \section*{Pipeline del tracker}
 
@@ -36,7 +36,7 @@ La pipeline del tracker studiato prevede i seguenti passaggi :
 
 \item Individuazione del target da tracciare, questo può essere eseguito specificando nel dettaglio le relative coordinate nel primo frame del video, oppure tramite una scelta manuale, sempre sul primo frame del video, della regione di interesse. Una volta individuato il target, se ne calcola l' istogramma nello spazio di feature scelto;
 
-\item Fase di training per l' addestramento della metrica adattiva : questa è supervisionata, e consiste nell' individuazione di un insieme di esempi,  positivi e negativi : gli esempi positivi sono individuati nelle regioni del frame immediatamente vicine al target, mentre gli esempi negativi sono individuati in quelle regioni attorno al target. Per ogni esempio preso, se ne calcola l' istogramma, nello stesso spazio delle feature, e con la stessa tecnica, con cui è stato calcolato l' istogramma del target. Questa fase si conclude con l' individuazione della matrice $\mathbf{A} \ \mathcal{2} \ \mathbb{R}^{d \times m}$ (con $d \leq  m$), che permette di ottenere le un' alta qualità di classificazione degli esempi di training.
+\item Fase di training per l' addestramento della metrica adattiva : questa è supervisionata, e consiste nell' individuazione di un insieme di esempi,  positivi e negativi : gli esempi positivi sono individuati nelle regioni del frame immediatamente vicine al target, mentre gli esempi negativi sono individuati in quelle regioni attorno al target. Per ogni esempio preso, se ne calcola l' istogramma, nello stesso spazio delle feature, e con la stessa tecnica, con cui è stato calcolato l' istogramma del target. Questa fase si conclude con l' individuazione della matrice $\mathbf{A} \ \mathcal{2} \ \mathbb{R}^{d \times m}$ (con $d \leq  m$), mediante la tecnica di Neighbourhood Components Analysis, descritta in \cite{main3},  che permette di ottenere un' alto livello di classificazione degli esempi di training.
 
 %, massimizzando l' errore di classificazione  in the leave-one-out cross validation. This is achieved by adopting the soft-max formulation for the nearest-neighbor classification.
 %
@@ -46,21 +46,40 @@ La pipeline del tracker studiato prevede i seguenti passaggi :
 
 \end{itemize}
 
+\section*{Strumenti utilizzati}
+
+Per l' implementazione, e quindi la successiva fase di sperimentazione, dell' algoritmo, si utilizza Matlab.\\\\
+La fase di addestramento della metrica viene eseguito mediante il toolbox, scritto in Matlab, messo a disposizione dagli autori di \cite{main3}, che a partire dall' insieme di campioni positivi e negativi, opportunamente etichettati, permette di ottenere la matrice di trasformazione $\mathbf{A}$. In particolare, il problema di massimizzazione viene convertito in uno di minimizzazione, e viene  quindi richiamata la funzione di minimizzazione che permette quindi di ottenere la matrice che rende massima la classificazione.
+
+
 \section*{Adaptive Metric Learning}
 
-Considerando la distanza di Mahalanobis : 
+Seguendo i passaggi in \cite{main1}, si considera la distanza di Mahalanobis : 
 
 $$ \mathcal{D}(\mathbf{x}_{i},\mathbf{x}_{j} ) = (\mathbf{Ax}_i -  \mathbf{Ax}_j )^T (\mathbf{Ax}_i -  \mathbf{Ax}_j ) 
 = (\mathbf{x}_i -  \mathbf{x}_j )^T \mathbf{Q}(\mathbf{x}_i -  \mathbf{x}_j ) $$
 
-Questa viene parametrizzata mediante l' uso della matrice $\mathbf{A} \ \mathcal{2} \ \mathbb{R}^{d \times m}$ che trasforma linearmente lo spazio originario delle feature, $\mathbb{R}^m$, in un nuovo spazio $\mathbb{R}^d$ (dove $d \leq m$). La matrice $\mathbf{Q} = \mathbf{A}^T\mathbf{A}$. Una volta acquisiti i dati di training (campioni positivi e campioni negativi) otteniamo la matrice $\mathbf{A}$. Questa permette di riportarci in un nuovo spazio, dove la distanza fra i dati di una stessa classe viene ridotta, mentre viene aumentata quella da i dati di una classe differente. 
+Questa viene parametrizzata mediante l' uso della matrice $\mathbf{A} \ \mathcal{2} \ \mathbb{R}^{d \times m}$, che, mediante una trasformazione lineare, trasforma  lo spazio originario delle feature, $\mathbb{R}^m$, in un nuovo spazio $\mathbb{R}^d$ (dove $d \leq m$). La matrice $\mathbf{Q} = \mathbf{A}^T\mathbf{A}$. 
+%Una volta acquisiti i dati di training (campioni positivi e campioni negativi) otteniamo quindi la matrice $\mathbf{A}$. 
+Questa permette di riportarci in un nuovo spazio, dove la distanza fra i dati di una stessa classe viene ridotta, mentre viene aumentata quella rispetto ad i dati di una classe differente. 
 
-\vspace{0.5cm}
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.6]{screen2.png}
+\caption{Esempio di trasformazione dei dati tramite la matrice $\mathbf{A}$}
+\end{figure}
+\vspace{0.3cm}
 
 Come precedente introdotto, la fase di learning prevede l' acquisizione di un set di campioni positivi e un set di campioni negativi. A partire dalla regione di interesse (target) i campioni positivi vengono acquisiti in quelle regioni ottenute spostando la regione del target di pochi pixel. I campioni negativi, invece, vengono individuati in quelle regioni che possono creare problemi di falsi positivi.
 
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.5]{screen1.png}
+\caption{Esempio di acquisizione di campioni positivi,in rosso, e negativi, in giallo}
+\end{figure}
+
 %%mettere immagine di esempio
-\vspace{0.5cm}
+\vspace{0.3cm}
 In base ai dati acquisiti, il tracker è in grado di eseguire una classificazione accurata, oltre a non avere problemi legati all' individuazione di falsi positivi. La matrice $\mathbf{A}$  permette di ottenere le migliori performance di classificazione, per un classificatore di tipo Nearest Neighbour (k-NN), nel nuovo spazio a $d$ dimensioni. Il classificatore esegue una predizione sulla classe di un dato in ingresso in basse alle informazioni sui k dati più vicini, in base a una metrica data. Questo metodo non è comunque differenziabile rispetto ad $\mathbf{A}$, per questo viene utilizzata una rappresentazione più semplice dei nearest neighbours. Dato l' insieme di vettori del training set $x_1, x_2, ... , x_n \ \mathcal{2} \ \mathbb{R}^m$, con le corrispondenti etichette  delle relative classi $c_1,c_2, ... , c_n$, si misura la relazione di vicinanza tra due coppie di vettori $x_i$ e $x_j$ mediante una misura probabilistica $p_{ij}$ : 
 $$p_{ij} = \frac{\text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_j  \| ^2)}{ \sum_{k \neq i} \text{exp}(-\| \mathbf{A}x_i - \mathbf{A}x_k  \| ^2)}.$$
 
@@ -84,12 +103,10 @@ dove $x_{ij} = x_i - x_j$.
 
 %%da chiarire ? e concludere
 
-
-
 \section*{Adaptive Metric Differential Tracking}
 
 La tecnica di tracking utilizzata, differential tracking, assume che tra un frame e l' altro vi siano piccoli spostamenti del target.
-Come tutti i metodi di tracking basati sull' uso di una funzione kernel, questo prevede che l' istogramma della regione del target che si vuol tracciare, venga pesato spazialmente mediante l' uso di una funzione kernel. In particolare, sia $\{\mathbf{x}_i\}_{i=1...n}$ l' insieme dei pixel della regione del target nel frame della sequenza video. Dati $\mathit{F}$, lo spazio delle feature utilizzato, e  $\mathit{U} = 1 ... m$, un numero finito di "bins", sia $b = \mathit{F} \to \mathit{U}$ una funzione di "binning" : $b(\mathbf{x},t)$ indica il bin corrispondente alla feature del pixel $\mathbf{x}$, al tempo $t$. Sia, infine, $\mathbf{K}: \Re^2 \to \Re^+ $, la funzione kernel che "pesa" i pixel della regione del target. Quindi, l' istogramma delle feature della regione del target $\mathbf{q} = [q_1, q_2, ... , q_m] ^ T \ \mathcal{2} \ \mathbb{R}^m$, viene calcolato come: 
+Come tutti i metodi di tracking basati sull' uso di una funzione kernel, questo prevede che l' istogramma della regione del target che si vuol tracciare, venga pesato spazialmente mediante l' uso di una funzione kernel. Come descritto in \cite{main2}, sia $\{\mathbf{x}_i\}_{i=1...n}$ l' insieme dei pixel della regione del target nel frame della sequenza video. Dati $\mathit{F}$, lo spazio delle feature utilizzato, e  $\mathit{U} = 1 ... m$, un numero finito di "bins", sia $b = \mathit{F} \to \mathit{U}$ una funzione di "binning" : $b(\mathbf{x},t)$ indica il bin corrispondente alla feature del pixel $\mathbf{x}$, al tempo $t$. Sia, infine, $\mathbf{K}: \Re^2 \to \Re^+ $, la funzione kernel che "pesa" i pixel della regione del target. Quindi, l' istogramma delle feature della regione del target $\mathbf{q} = [q_1, q_2, ... , q_m] ^ T \ \mathcal{2} \ \mathbb{R}^m$, viene calcolato come: 
 
 $$q_u \ = \ C\sum_{i=1}^n{K}(\mathbf{x}_i - \mathbf{c})\delta(b(\mathbf{x}_i,t),u)$$
 $$C\ = \ \frac{1}{\sum_{i=1}^n{K}(\mathbf{x}_i - \mathbf{c})}$$
@@ -120,18 +137,39 @@ $$\mathbf{ M = \frac{1}{2} \text{diag}(p(c))^{(-\frac{1}{2})} \mathbf{ U^T J_K(c
 
 $$\mathbf{J_K} = \begin{bmatrix} \mathcal{5}_c K(y_1 - c) \\ \vdots \\ \mathcal{5}_c K(y_n - c) \end{bmatrix}  \mathcal{2} \ \mathbb{R}^{n \times r}.$$
 
+%\section*{Implementazione}
 
-\section*{Implementazione}
-
-Principali fasi affrontate nell 'implementazione della tecnica, con accenno quindi ai problemi incontrati e la loro gestione.
 
 \section*{Sperimentazione}
+
+In tutti gli esperimenti viene effettuata la selezione dei campioni positivi e negativi viene effettuata mediante l' utilizzo di un generatore di numeri pseudocasuali, distribuiti secondo una distribuzione normale, come si può vedere in \figurename~\ref{screen3}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.6]{screen3.png}
+\caption{Esempio di acquisizione dei campioni secondo una distribuzione normale, durante la fase di training. In giallo i campioni negativi, mentre in rosso quelli positivi, in verde il target.}
+\label{screen3}
+\end{figure}
+\vspace{0.3cm}
+
+Inoltre, nella fase di tracking, vengono acquisiti nuovi campioni positivi e negativi, e, insieme ad i campioni più recenti, acquisiti durante la fase di training, viene calcolato il valore della funzione $g(\mathbf{A})$. Se il valore della funzione oltrepassa una soglia predefinita, viene effettuato un nuovo addestramento della metrica, ottenendo quindi una nuova matrice $\mathbf{A}$.
+
+Per quanto riguarda l' addestramento della metrica, la funzione che si occupa della massimizzazione della funzione $g(\mathbf{A})$, prevede che vengano impostate un numero di iterazioni dell' algoritmo. Per ogni iterazione viene restituito un valore della funzione e la corrispondente matrice $\mathbf{A}$. Nell' implementazione del tracker non viene impostato un numero fissato di iterazioni, ma mediante un valore predefinito di una soglia, viene ripetuto il processo di massimizzazione fino al raggiungimento di un determinato valore della funzione.\\\\
+
+Gli esperimenti effettuati si distinguono quindi per i seguenti fattori :
+\begin{itemize}
+\item modalità di scelta dei campioni;
+\item numero di campioni positivi e negativi scelti;
+\item soglia sul valore di $g(\mathbf{A})$ per il ricalcolo della matrice $\mathbf{A}$;
+\item soglia sul valore di $g(\mathbf{A})$ nel processo di addestramento della metrica;
+\item spazio delle feature.
+\end{itemize} 
 
 Sperimentazioni effettuate sui video di test e relativi commenti. Elenco quindi dei video dove la tecnica produce buoni risultati ma anche di video dove la tecnica incontra difficoltà nel tracking. descrizioni nell' impostazione dei parametri utilizzati : numero di campioni positivi e negativi utilizzati per l' addestramento , e ad ogni frame, sogli per le intersezioni nella selezione dei campioni positivi e negativi, soglia per il riaddestramento della metrica.
 
 \section*{Conclusioni}
 
-
+\newpage
 \bibliographystyle{plain}
 \bibliography{BIBLIO}
 \end{document}
