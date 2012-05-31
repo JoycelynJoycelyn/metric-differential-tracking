@@ -74,7 +74,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
             [Anew,fX,i] = minimize(Anew,'nca_obj',1,sample,label);
     end
     %[Anew,fX,i] = minimize(A(:),'nca_obj',8,sample,label);
-    T.target.A = reshape(Anew,225,225);
+    T.target.A_min = reshape(Anew,225,225);
    % T.target.G = G(A, pos_feature',neg_feature')
     
     T.target.pos_offset = pos_offset;
@@ -85,19 +85,18 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     %T.target.pos_feature_tot = [ ];
     %T.target.neg_feature_tot = [ ];
      
-    T.target.G = G_vect(T.target.A, pos_feature',neg_feature');
-    [T.target.F T.target.dF] =  nca_obj(T.target.A(:), sample, label);
+    %T.target.G = G_vect(T.target.A, pos_feature',neg_feature');
+    [T.target.F T.target.dF] =  nca_obj(T.target.A_min(:), sample, label);
     T.target.F = - T.target.F;
     
     T.target.F
-    T.target.G
    
     T.target.G = T.target.F;
     %pause();
     dat = [T.target.G; T.frame_number];
     T.target.G_hist = [T.target.G_hist dat];
     
-    
+    T.target.A = eye(225);
 % randn(2,1)    
 return 
 
