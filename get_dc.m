@@ -6,7 +6,7 @@ function dc = get_dc(T)
     T.target.M = zeros(225 ,2);
     
     if(size(U,1) ~= size(J,1))
-        J = get_J(T.target.subIm, T.target.BB_p);
+        J = get_J(T.target.subIm);
     end
     
     T.target.M = get_M(T.target.p, U, J); 
