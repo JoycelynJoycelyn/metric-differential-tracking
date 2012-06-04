@@ -4,7 +4,7 @@ np = size(subIm,1) * size(subIm,2);
 
 K = zeros(np, 1);
 C=0;
-s = min(size(subIm,1) , size(subIm,2)) / 2;
+s = (size(subIm,1) + size(subIm,2)) / 2;
 
 % ji = 1 : np;
 % i = 1 : size(subIm,2);

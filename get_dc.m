@@ -1,10 +1,15 @@
 function dc = get_dc(T)
     
     U = get_U(T.target.subIm, 225);
-    %J = get_J(T.target.subIm, T.target.BB_p);
-    
+    %
+    J = T.target.J;
     T.target.M = zeros(225 ,2);
-    T.target.M = get_M(T.target.p, U, T.target.J); 
+    
+    if(size(U,1) ~= size(J,1))
+        J = get_J(T.target.subIm);
+    end
+    
+    T.target.M = get_M(T.target.p, U, J); 
     
     S = (T.target.M'*(T.target.A'*T.target.A)*T.target.M) \ ( T.target.M'*(T.target.A'*T.target.A));
     

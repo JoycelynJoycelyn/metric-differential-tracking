@@ -7,7 +7,7 @@ function J = get_J(subIm)
     np = size(subIm,1) * size(subIm,2);
     
     J = zeros(np, 2);
-    s=min(size(subIm,1) , size(subIm,2));
+    s = (size(subIm,1) + size(subIm,2)) / 2;
     
     % i o x
     for i = 1 : size(subIm,2)
