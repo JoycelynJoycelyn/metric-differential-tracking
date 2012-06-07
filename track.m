@@ -6,7 +6,7 @@ function T = track(T, frame)
 
       T.target.subIm = im2double(subIm);
      % T.target.subIm = T.target.subIm / 255.0;
-      T.target.p = get_histogram_feature(T, T.target.subIm, 225);%, T.target.i_c, T.target.j_c);
+      T.target.p = get_histogram_feature(T, T.target.subIm, 216);%, T.target.i_c, T.target.j_c);
 
 
       %optimal displacement to calculate (delta_c)
@@ -28,7 +28,7 @@ function T = track(T, frame)
       %training examples acquisition for g(A) evalutation
       neg_feature = [];
      % neg_offset = [];
-      pos_feature = [get_histogram_feature(T, im2double(imcrop(frame, T.target.BB_p)), 225)'];
+      pos_feature = [get_histogram_feature(T, im2double(imcrop(frame, T.target.BB_p)), 216)'];
      % pos_offset = [];
       obj_box = T.target.BB_p;
 
@@ -54,7 +54,7 @@ function T = track(T, frame)
           end
           if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
               subImg= im2double(imcrop(frame,rect));
-              pos_feature=[pos_feature; get_histogram_feature(T, subImg, 225)'];
+              pos_feature=[pos_feature; get_histogram_feature(T, subImg, 216)'];
           end
      end
      
@@ -72,7 +72,7 @@ function T = track(T, frame)
           if(inters<T.soglia_neg && BBdistance(T.target.BB_p,rect)<60)
             if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
                   subImg= im2double(imcrop(frame,rect));
-                neg_feature=[neg_feature; get_histogram_feature(T, subImg, 225)'];
+                neg_feature=[neg_feature; get_histogram_feature(T, subImg, 216)'];
             end
           end
           i=i+1;
@@ -92,7 +92,7 @@ function T = track(T, frame)
 %                 %positive sample
 %                 T.target.offset.pos = [T.target.offset.pos ; offset];
 %                 subImg= im2double(imcrop(frame,rect));
-%                 feature= get_histogram_feature(T, subImg, 225)';
+%                 feature= get_histogram_feature(T, subImg, 216)';
 %              %   pos_offset =[pos_offset; offset];
 %                 pos_feature = [pos_feature; feature]; 
 %                 %disegnamo il campione positivo sul frame
@@ -105,7 +105,7 @@ function T = track(T, frame)
 %                      T.target.offset.neg=[T.target.offset.neg;offset];
 %                      T.target.offset.neg_rect =[T.target.offset.neg_rect;rect]
 %                      subImg= im2double(imcrop(frame,rect));
-%                      feature= get_histogram_feature(T, subImg, 225)';
+%                      feature= get_histogram_feature(T, subImg, 216)';
 %                %      neg_offset = [neg_offset; offset];
 %                      neg_feature = [neg_feature; feature];
 %                      %disegnamo il campione negativo sul frame
@@ -117,7 +117,7 @@ function T = track(T, frame)
 % 
 %     end
           obj_box = T.target.BB_p;
-          drawnow;
+          %drawnow;
 
      %aggiungo i nuovi campioni a quelli ricavati precedentemente  
      T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
@@ -166,8 +166,9 @@ function T = track(T, frame)
         end
       end
       %al = normcdf(ordine_grand,0,20);
-      al = ordine_grand/12;
-      T.target.A = al*T.target.A_min + (1-al)*eye(225);
+      %al = ordine_grand/12;
+      al = 0;
+      T.target.A = al*T.target.A_min + (1-al)*eye(216);
 %       %if(abs(g) > abs(T.target.G)*1.3)% || isnan(g) == 1)%|| g > T.target.G*1.25 || isinf(abs(g)) == 1 )
 %       if(abs(g) > T.threshold || isnan(g) == 1 || isinf(abs(g)) == 1 )
 %         T.target.pos_feature_tot = T.target.pos_feature_tot(1:size(T.target.pos_feature_tot,1) - size(pos_feature,1), :);
@@ -178,7 +179,7 @@ function T = track(T, frame)
 %         label = [ones(feature_positive,1) zeros(feature_positive,1); zeros(feature_negative,1) ones(feature_negative,1)];
 %         %label = [ones(size(pos_feature,1),1) zeros(size(pos_feature,1),T.tot_campioni_neg); zeros(size(neg_feature,1),1) eye(T.tot_campioni_neg)];
 %         %A = T.target.A;
-%         %A = eye(225);
+%         %A = eye(216);
 %         %A = [eye(50) zeros(50,175)];
 %         %A = [ones(1,112) zeros(1,113);zeros(1,112) ones(1,113)];
 %         %A = [eye(50) eye(50) eye(50) eye(50) ones(50,25)];
@@ -188,7 +189,7 @@ function T = track(T, frame)
 %             [Anew,~,i] = minimize(Anew,'nca_obj',1,sample,label);
 %         end
 %         %[Anew,fX,i] = minimize(T.target.A(:),'nca_obj',5,sample,label);
-%         T.target.A_min = reshape(Anew,225,225);
+%         T.target.A_min = reshape(Anew,216,216);
 %         %T.target.pos_feature_tot = [];
 %         %T.target.neg_feature_tot = [];
 %         %T.target.G = g;
@@ -209,6 +210,10 @@ function T = track(T, frame)
       
       subplot('Position',[0.1 0.05 0.85 0.25]);
       semilogy(T.target.G_hist(2,:) , T.target.G_hist(1,:));
+      xlim([T.target.G_hist(2,1) T.target.G_hist(2,size(T.target.G_hist,2))+1]);
+      ylim([-10^2 -10^-10]);
+      ylabel('G(A)')
+      xlabel('Frame Number')
       subplot('Position',[0.1 0.35 0.85 0.6]);
       % T.target.G = g;
   end
