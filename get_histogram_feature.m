@@ -13,7 +13,7 @@ end
 q = U' * K;
 %q = q ./ norm(q,2);
 
-%q = q + 0.001 ;
+%q = q + 0.0001 ;
 %q = q ./ sum(q);
 %sum(q)
 
