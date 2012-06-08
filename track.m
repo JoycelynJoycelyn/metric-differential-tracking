@@ -178,8 +178,8 @@ function T = track(T, frame)
         end
       end
       %al = normcdf(ordine_grand,0,20);
-      %al = ordine_grand/12;
-      al = 0;
+      al = ordine_grand/12;
+      %al = 1;
       T.target.A = al*T.target.A_min + (1-al)*eye(216);
 %       %if(abs(g) > abs(T.target.G)*1.3)% || isnan(g) == 1)%|| g > T.target.G*1.25 || isinf(abs(g)) == 1 )
 %       if(abs(g) > T.threshold || isnan(g) == 1 || isinf(abs(g)) == 1 )
@@ -220,12 +220,18 @@ function T = track(T, frame)
 %         end
 %       end
       
-      subplot('Position',[0.1 0.05 0.85 0.25]);
+      subplot('Position',[0.1 0.05 0.75 0.25]);
       semilogy(T.target.G_hist(2,:) , T.target.G_hist(1,:));
       xlim([T.target.G_hist(2,1) T.target.G_hist(2,size(T.target.G_hist,2))+1]);
       ylim([-10^2 -10^-10]);
       ylabel('G(A)')
       xlabel('Frame Number')
+      subplot('Position',[0.9 0.05 0.05 0.25])
+      bar(al);
+      ylim([0 1]);
+      set(gca,'YTick',0:1:1);
+      set(gca,'YTickLabel',{'Id' , 'A'});
+      set(gca,'XTickLabel',[]);
       subplot('Position',[0.1 0.35 0.85 0.6]);
       % T.target.G = g;
   end
