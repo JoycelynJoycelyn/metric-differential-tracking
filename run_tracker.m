@@ -31,6 +31,11 @@ while nextFrame(vr)
       %T.target.BB_q
       T.target.BB_p = T.target.BB_q;
       T.target.subIm = im2double(imcrop(frame, T.target.BB_q));
+      
+      write = fopen('file.txt', 'wt');
+      fprintf(write, '%f,%f,%d,%d', T.target.BB_p);
+      fclose(write);
+      
       rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
       drawnow;
       %pause(10);

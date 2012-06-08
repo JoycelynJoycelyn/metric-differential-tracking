@@ -1,16 +1,16 @@
 function T = main_tracker(fname)%, gamma, tau, radius)
 % soglia intersezione esempi positivi e negativi
-T.soglia_pos=0.7;
+T.soglia_pos=0.8;
 T.soglia_neg=0.3;
 % numero di campioni per l'apprendimento
-T.num_sample_positivi = 10;
-T.num_sample_negativi = 30;
+T.num_sample_positivi = 15;
+T.num_sample_negativi = 55;
 % numero nuovi campioni a ogni frame
 T.campioni_pos_track = 5;
-T.campioni_neg_track = 5;
+T.campioni_neg_track = 15;
 % numero totale campioni per controllo di G(A)
 T.tot_campioni_pos = 5;
-T.tot_campioni_neg = 5;
+T.tot_campioni_neg = 15;
 %soglia per G(A)
 T.threshold = 1.0e-2;
 %inizializzazione BB
@@ -19,8 +19,8 @@ T.threshold = 1.0e-2;
 %T.target.BB_q = [42  203   60   95];
 
 %T.target.BB_q = [86  319  146.0000   46.0000];
-%T.target.BB_q = [127  214   61   61];
-T.target.BB_q = [];
+T.target.BB_q = [110  210  80  70];
+%T.target.BB_q = [];
 
 
 

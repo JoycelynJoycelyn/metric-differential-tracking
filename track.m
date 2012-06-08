@@ -7,7 +7,8 @@ function T = track(T, frame)
       T.target.subIm = im2double(subIm);
      % T.target.subIm = T.target.subIm / 255.0;
       T.target.p = get_histogram_feature(T, T.target.subIm, 216);%, T.target.i_c, T.target.j_c);
-
+      
+      
 
       %optimal displacement to calculate (delta_c)
       T.target.dc = get_dc(T);
@@ -23,6 +24,9 @@ function T = track(T, frame)
       T.target.BB_p(2) = T.target.BB_p(2) + T.target.dc(2);
       rectangle('Position', T.target.BB_p, 'EdgeColor', 'g');
 
+      write = fopen('file.txt', 'a+');
+      fprintf(write, '%f,%f,%d,%d', T.target.BB_p);
+      fclose(write);
       
       
       %training examples acquisition for g(A) evalutation
@@ -157,7 +161,7 @@ function T = track(T, frame)
 %     g
 %     pause();
     
-      g = T.target.F
+      g = T.target.F;
       dat = [g; T.frame_number];
       T.target.G_hist = [T.target.G_hist dat];
       if(size(T.target.G_hist,2)>20)
