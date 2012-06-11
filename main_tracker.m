@@ -1,4 +1,5 @@
 function T = main_tracker(fname)%, gamma, tau, radius)
+%Se 0 ricarica le feature calcolate precedentemente
 T.do_train = 1;
 
 % soglia intersezione esempi positivi e negativi
@@ -18,12 +19,15 @@ T.threshold = 1.0e-2;
 %inizializzazione BB
 
 %box lemming
-T.target.BB_q = [42  203   60   95];
+%T.target.BB_q = [42  203   60   95];
 
-%T.target.BB_q = [86  319  146.0000   46.0000];
-%T.target.BB_q = [110  210  80  70];
-%T.target.BB_q = [400   457    65    57];
+
+%BB board
+T.target.BB_q = [110 210 89 67];
 %T.target.BB_q = [];
+
+%BB board prost
+%T.target.BB_q = [57 167 195 153];
 
 
 
@@ -31,8 +35,8 @@ T.target.BB_q = [42  203   60   95];
 %altrimenti effettua una permutazioni degli indici per prendere gli
 %offset in maniera casuale tra quelli usati nella fase di train
 %
-T.random_offset_permutation = 1;
-%T.random_offset_permutation = 0;
+%T.random_offset_permutation = 1;
+T.random_offset_permutation = 0;
 
 
 Representer.represent = @track;

@@ -71,9 +71,10 @@ function T = track(T, frame)
           else
             rect = T.target.offset.neg_rect(neg_offset_ind(i),:);
           end
-          inters=intersectBB(T.target.BB_p,rect);
-          if(inters<T.soglia_neg && BBdistance(T.target.BB_p,rect)<60)
-            if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
+          if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
+            inters=intersectBB(T.target.BB_p,rect);
+            if(inters<T.soglia_neg && BBdistance(T.target.BB_p,rect)<60)
+            
                   subImg= im2double(imcrop(frame,rect));
                 neg_feature=[neg_feature; get_histogram_feature(T, subImg, 216)'];
             end
@@ -83,11 +84,11 @@ function T = track(T, frame)
      while(size(neg_feature,1)<T.campioni_neg_track)
         rect = ceil([   [size(frame,2) size(frame,1)].*rand(1,2)    obj_box(3) obj_box(4)]);
         offset = [obj_box(1)-rect(1) obj_box(2)-rect(2) 0 0];
-        inters=intersectBB(T.target.BB_p,rect);
-        if(inters<T.soglia_neg && BBdistance(T.target.BB_p,rect)<60)
-           if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
+        if(rect(1)>0 && rect(2)>0 && (rect(1)+rect(3))<size(frame,2) && (rect(2)+rect(4))<size(frame,1))
+            inters=intersectBB(T.target.BB_p,rect);
+            if(inters<T.soglia_neg && BBdistance(T.target.BB_p,rect)<100)
                 T.target.offset.neg_rect =[T.target.offset.neg_rect;rect];
-                T.target.offset.neg =[T.target.offset.neg_rect;offset];
+                T.target.offset.neg =[T.target.offset.neg;offset];
                 subImg= im2double(imcrop(frame,rect));
                 neg_feature=[neg_feature; get_histogram_feature(T, subImg, 216)'];
            end
@@ -164,7 +165,11 @@ end
 %     pause();
     
       g = T.target.F;
-      dat = [g; T.frame_number];
+      if(g>-10e-15)
+        dat = [-10e-15; T.frame_number];
+      else
+        dat = [g; T.frame_number];
+      end
       T.target.G_hist = [T.target.G_hist dat];
       if(size(T.target.G_hist,2)>20)
             T.target.G_hist = T.target.G_hist(:,size(T.target.G_hist,2)-20:size(T.target.G_hist,2));
@@ -184,8 +189,8 @@ end
         end
       end
       %al = normcdf(ordine_grand,0,20);
-      al = ordine_grand/12;
-      %al = 1;
+      %al = ordine_grand/12;
+      al = 1;
       T.target.A = al*T.target.A_min + (1-al)*eye(216);
 %       if(abs(g) > 1.0e-5 )
 %          [Anew,fX,i] = minimize(T.target.A_min(:),'nca_obj',1,sample,label);
@@ -236,7 +241,7 @@ end
       subplot('Position',[0.1 0.05 0.75 0.25]);
       semilogy(T.target.G_hist(2,:) , T.target.G_hist(1,:));
       xlim([T.target.G_hist(2,1) T.target.G_hist(2,size(T.target.G_hist,2))+1]);
-      ylim([-10^2 -10^-12]);
+      ylim([-10^2 -10^-16]);
       ylabel('G(A)')
       xlabel('Frame Number')
       subplot('Position',[0.9 0.05 0.03 0.25])
