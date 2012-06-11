@@ -11,6 +11,19 @@ function T = load_train(frame , obj_box, positive_sample, negative_sample,T)
     %T.target.neg_feature_tot = [ ];
      
     %T.target.G = G_vect(T.target.A, pos_feature',neg_feature');
+    for i=1:size(T.target.offset.pos,1)
+        rectangle('Position', obj_box+T.target.offset.pos(i,:), 'EdgeColor', 'r');
+        drawnow;
+    end
+    for i=1:size(T.target.offset.neg_rect,1)
+        rectangle('Position', T.target.offset.neg_rect(i,:), 'EdgeColor', 'y');
+        drawnow;
+    end
+    if isfield(T,'outputCreator')
+        for i=1:2*T.fps
+            T = T.outputCreator.write(T);
+        end
+    end 
     sample= [T.target.pos_feature_tot; T.target.neg_feature_tot];
     label = [ones(size(T.target.pos_feature_tot,1),1) zeros(size(T.target.pos_feature_tot,1),1); zeros(size(T.target.neg_feature_tot,1),1) ones(size(T.target.neg_feature_tot,1),1)];
     
