@@ -38,5 +38,6 @@ function T = load_train(frame , obj_box, positive_sample, negative_sample,T)
     T.target.G_hist = [T.target.G_hist dat];
     
     T.target.A = eye(216);
+    T.target.A =T.target.A_min;
 end
 

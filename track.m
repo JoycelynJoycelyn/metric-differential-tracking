@@ -50,7 +50,7 @@ function T = track(T, frame)
      end
      
      % calcolo nuovi campioni positivi
-     for i=1:T.campioni_pos_track
+    for i=1:T.campioni_pos_track
           if(isempty(pos_offset_ind))
             rect = T.target.BB_p+T.target.offset.pos(i,:);
           else
@@ -99,7 +99,7 @@ function T = track(T, frame)
                 neg_feature=[neg_feature; get_histogram_feature(T, subImg, 216)'];
            end
         end
-     end    
+     end
 %      while(size(pos_feature,1) < T.num_sample_positivi  || size(neg_feature,1) < T.num_sample_negativi)
 %         %rect = ceil([   [size(frame,2) size(frame,1)].*rand(1,2)    obj_box(3) obj_box(4)]);
 %         offset = ceil([    [obj_box(3) obj_box(4)].*randn(1,2)    0 0]);
@@ -170,7 +170,6 @@ end
       else
           dat = [g; T.frame_number];
       end
-      
       T.target.G_hist = [T.target.G_hist dat];
       if(size(T.target.G_hist,2)>20)
             T.target.G_hist = T.target.G_hist(:,size(T.target.G_hist,2)-20:size(T.target.G_hist,2));
