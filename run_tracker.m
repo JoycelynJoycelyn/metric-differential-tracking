@@ -3,6 +3,7 @@ close all;
 vr = videoReader(fname);
 
 %rng('default');
+T.fname = fname;
 T.time         = 0;
 T.frame_number = 0;
 T.fps          = getfield(get(vr), 'FrameRate');
@@ -33,7 +34,7 @@ while nextFrame(vr)
       T.target.subIm = im2double(imcrop(frame, T.target.BB_q));
       
       write = fopen('file.txt', 'wt');
-      fprintf(write, '%f,%f,%d,%d', T.target.BB_p);
+      fprintf(write, '%f,%f,%d,%d\n', T.target.BB_p);
       fclose(write);
       
       rectangle('Position', T.target.BB_q, 'EdgeColor', 'b');
@@ -43,8 +44,11 @@ while nextFrame(vr)
       T.target.J = get_J(T.target.subIm);
       T.target.q = get_histogram_feature(T, T.target.subIm, 216);
       T.target.G_hist = [];
-      T = train(frame,T.target.BB_q, T.num_sample_positivi,T.num_sample_negativi, T);
-          
+      if(T.do_train)
+        T = train(frame,T.target.BB_q, T.num_sample_positivi,T.num_sample_negativi, T);
+      else
+        T = load_train(frame,T.target.BB_q, T.num_sample_positivi,T.num_sample_negativi, T);
+      end   
   end
   
   if isfield(T, 'representer')

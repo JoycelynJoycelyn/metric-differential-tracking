@@ -1,4 +1,6 @@
 function T = main_tracker(fname)%, gamma, tau, radius)
+T.do_train = 1;
+
 % soglia intersezione esempi positivi e negativi
 T.soglia_pos=0.8;
 T.soglia_neg=0.3;
@@ -16,10 +18,11 @@ T.threshold = 1.0e-2;
 %inizializzazione BB
 
 %box lemming
-%T.target.BB_q = [42  203   60   95];
+T.target.BB_q = [42  203   60   95];
 
 %T.target.BB_q = [86  319  146.0000   46.0000];
-T.target.BB_q = [110  210  80  70];
+%T.target.BB_q = [110  210  80  70];
+%T.target.BB_q = [400   457    65    57];
 %T.target.BB_q = [];
 
 

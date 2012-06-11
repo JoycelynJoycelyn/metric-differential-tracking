@@ -25,15 +25,15 @@ function T = track(T, frame)
       rectangle('Position', T.target.BB_p, 'EdgeColor', 'g');
 
       write = fopen('file.txt', 'a+');
-      fprintf(write, '%f,%f,%d,%d', T.target.BB_p);
+      fprintf(write, '%f,%f,%d,%d\n', T.target.BB_p);
       fclose(write);
       
       
       %training examples acquisition for g(A) evalutation
       neg_feature = [];
      % neg_offset = [];
-      pos_feature = [get_histogram_feature(T, im2double(imcrop(frame, T.target.BB_p)), 216)'];
-     % pos_offset = [];
+      %pos_feature = [get_histogram_feature(T, im2double(imcrop(frame, T.target.BB_p)), 216)'];
+      pos_feature = [];
       obj_box = T.target.BB_p;
 
      
@@ -136,7 +136,9 @@ function T = track(T, frame)
           %drawnow;
 
      %aggiungo i nuovi campioni a quelli ricavati precedentemente  
+if(~isempty(pos_feature))
      T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
+end
      T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
     
      if(size(T.target.pos_feature_tot,1) > T.tot_campioni_pos)
@@ -173,7 +175,7 @@ function T = track(T, frame)
         ordine_grand = floor(log10(abs(g)));
         if(ordine_grand<0)
            if(ordine_grand<-12)
-               ordine_grand = 0;
+               ordine_grand = 12;
            else
                    ordine_grand = abs(ordine_grand);
            end
@@ -185,6 +187,13 @@ function T = track(T, frame)
       al = ordine_grand/12;
       %al = 1;
       T.target.A = al*T.target.A_min + (1-al)*eye(216);
+%       if(abs(g) > 1.0e-5 )
+%          [Anew,fX,i] = minimize(T.target.A_min(:),'nca_obj',1,sample,label);
+%          while(nca_obj(Anew, sample, label)>1.0e-5)
+%             [Anew,~,i] = minimize(Anew,'nca_obj',1,sample,label);
+%          end
+%          T.target.A_min = reshape(Anew,216,216);
+%       end
 %       %if(abs(g) > abs(T.target.G)*1.3)% || isnan(g) == 1)%|| g > T.target.G*1.25 || isinf(abs(g)) == 1 )
 %       if(abs(g) > T.threshold || isnan(g) == 1 || isinf(abs(g)) == 1 )
 %         T.target.pos_feature_tot = T.target.pos_feature_tot(1:size(T.target.pos_feature_tot,1) - size(pos_feature,1), :);
@@ -227,15 +236,16 @@ function T = track(T, frame)
       subplot('Position',[0.1 0.05 0.75 0.25]);
       semilogy(T.target.G_hist(2,:) , T.target.G_hist(1,:));
       xlim([T.target.G_hist(2,1) T.target.G_hist(2,size(T.target.G_hist,2))+1]);
-      ylim([-10^2 -10^-10]);
+      ylim([-10^2 -10^-12]);
       ylabel('G(A)')
       xlabel('Frame Number')
-      subplot('Position',[0.9 0.05 0.05 0.25])
-      bar(al);
+      subplot('Position',[0.9 0.05 0.03 0.25])
+      bar(al+0.01);
       ylim([0 1]);
       set(gca,'YTick',0:1:1);
       set(gca,'YTickLabel',{'Id' , 'A'});
       set(gca,'XTickLabel',[]);
+      set(gca,'color',[1 0 0]);
       subplot('Position',[0.1 0.35 0.85 0.6]);
       % T.target.G = g;
   end

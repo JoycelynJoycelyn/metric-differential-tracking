@@ -10,7 +10,9 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     T.target.offset.neg_rect = [];
     T.target.offset.pos = [];
     T.target.offset.neg = [];
-    pos_feature = [];
+    subImg= im2double(imcrop(frame,obj_box));
+                
+    pos_feature = get_histogram_feature(T, subImg, 216)';
     pos_offset = [];
     neg_feature = [];
     neg_offset = [];
@@ -75,12 +77,21 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     end
     %[Anew,fX,i] = minimize(A(:),'nca_obj',8,sample,label);
     T.target.A_min = reshape(Anew,216,216);
-   % T.target.G = G(A, pos_feature',neg_feature')
+    
+    
+    % T.target.G = G(A, pos_feature',neg_feature')
     
     T.target.pos_offset = pos_offset;
     T.target.neg_offset = neg_offset;
     T.target.pos_feature_tot = [ T.target.pos_feature_tot; pos_feature ];
     T.target.neg_feature_tot = [ T.target.neg_feature_tot; neg_feature ];
+    dlmwrite([T.fname '_A'],T.target.A_min);
+    dlmwrite([T.fname '_Pos_feat_tot'],T.target.pos_feature_tot);
+    dlmwrite([T.fname '_Neg_feat_tot'],T.target.neg_feature_tot);
+    dlmwrite([T.fname '_Pos_off'],T.target.offset.pos);
+    dlmwrite([T.fname '_Neg_off'],T.target.offset.neg);
+    dlmwrite([T.fname '_Neg_off_rect'],T.target.offset.neg_rect);
+    
     
     %T.target.pos_feature_tot = [ ];
     %T.target.neg_feature_tot = [ ];
@@ -97,6 +108,7 @@ function T = train( frame , obj_box, positive_sample, negative_sample,T)
     T.target.G_hist = [T.target.G_hist dat];
     
     T.target.A = eye(216);
+    %T.target.A =T.target.A_min;
 % randn(2,1)    
 return 
 
