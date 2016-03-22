@@ -1,0 +1,1 @@
+A Matlab implementation of a tracking method that uses a learning method for the metric used. An initially learning phase was implemented. Then, a mean shift tracker with a modified version of the Matusita metric,  that uses the output of the learning phase, was implemented.
